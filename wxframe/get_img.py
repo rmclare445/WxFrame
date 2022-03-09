@@ -4,9 +4,11 @@ Retrieve images from the web
 
 """
 
-import config.locs
-import requests
 import shutil
+import requests
+import tkinter as tk
+import config.locs
+from PIL import Image, ImageTk
 
 #####################################
 #                                   #
@@ -56,11 +58,40 @@ def get_img( url, filename ):
         print(url)
         raise RuntimeWarning("Couldn't download image!")
         
+def crop_meteogram( path=nws_meteogram[1], debug=False ):
+    # Opens a image in RGB mode
+    im = Image.open(path)
+    # Crop specs for removing unnecessary vars from plot
+    im1 = im.crop((0, 0, 800, 600))
+    # Debug mode for checking crop specs
+    if debug:
+        # Shows the image in image viewer
+        im1.show()
+    else:
+        # Overwrite previous image
+        im1.save(path)
+        
 def get_imgs( ):
     #
     for img in images:
         get_img( img[0], img[1] )
+    #
+    crop_meteogram()
+        
+        
+def show_img( path, xx=0, yy=0 ):
+    # Create a photoimage object of the image in the path
+    image = Image.open(path)
+    test = ImageTk.PhotoImage(image)
+    
+    label = tk.Label(image=test)
+    label.image = test
+    
+    # Position image
+    label.place(anchor='center', x=xx, y=yy)
+    #label.pack()
 
 
 if __name__ == "__main__":
-    get_img( pw_conus_maxtemp[0], img_dir+"test.png" )
+    #get_img( pw_conus_maxtemp[0], img_dir+"test.png" )
+    crop_meteogram( debug=False )
