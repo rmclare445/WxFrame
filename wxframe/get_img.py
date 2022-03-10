@@ -62,7 +62,7 @@ def crop_meteogram( path=nws_meteogram[1], debug=False ):
     # Opens a image in RGB mode
     im = Image.open(path)
     # Crop specs for removing unnecessary vars from plot
-    im1 = im.crop((0, 0, 800, 600))
+    im1 = im.crop((0, 0, 800, 420))
     # Debug mode for checking crop specs
     if debug:
         # Shows the image in image viewer
@@ -75,7 +75,7 @@ def get_imgs( ):
     #
     for img in images:
         get_img( img[0], img[1] )
-    #
+    
     crop_meteogram()
         
         
@@ -88,7 +88,7 @@ def show_img( path, xx=0, yy=0 ):
     label.image = test
     
     # Position image
-    label.place(anchor='center', x=xx, y=yy)
+    label.place(anchor='center', relx=xx, rely=yy)
     #label.pack()
 
 
