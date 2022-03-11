@@ -3,12 +3,11 @@
 Retrieve sunrise/sunset data from web
 
 """
-    
+
 import requests
 from nws_read import remove_html
 
 srss_url = "https://sunrise-sunset.org/us/pacific-grove-ca"
-
 
 def get_riseset( url=srss_url ):
     # Open the url
@@ -30,7 +29,6 @@ def get_riseset( url=srss_url ):
         raise RuntimeWarning("Couldn't access webpage!")
         
     return sunrise, sunset
-
 
 if __name__ == "__main__":
     print( get_riseset() )

@@ -33,10 +33,13 @@ class WxFrame( tk.Tk ):
         self.title("WxFrame")
         self.configure(bg='black', cursor="none")
         self.attributes('-fullscreen', True)
+        self.globfont = 'lucida'
         # Clarify initialization period
         self.init = True
         # Exit on Esc
         self.bind( "<Escape>", lambda x: self.destroy() )
+        # Turn page on Enter ## will be amended to GPIO input on Pi
+        self.bind( "<Return>", lambda x: self.turn_page())
         
         # Get screen resources
         self.width  = self.winfo_screenwidth()
@@ -45,13 +48,27 @@ class WxFrame( tk.Tk ):
         # Get new images
         print("Getting updated images")
         get_imgs()
+        print("Updated images retrieved")
+        
+        # Establish pages
+        self.pages = ['Local', 'CONUS', 'Pacific', 'Global', 'Forecast']
+        
+        # 
+        self.header = tk.Frame( self, relief=tk.RAISED, borderwidth=4 )
+        self.header.place(relx=0, rely=0, anchor="nw")
+        self.headtext = tk.Label( self.header, text="Local" )
+        self.headtext.pack( )
+        self.headtext.config(fg="white", bg="black", 
+                             font=(self.globfont, int(self.height/36.), 'italic'),
+                             padx=10, pady=5)
+        self.current_page = 0
         
         #                             #
         #   Dashboard configuration   #
         #  _________________________  #
         self.dash = tk.Frame( self, relief=tk.RAISED, borderwidth=4 )
         self.dash.place(relx=0, rely=1, anchor="sw")
-        self.dash_font = ('lucida', int(self.height/36.), 'bold')
+        self.dash_font = (self.globfont, int(self.height/36.), 'bold')
         # Make clock
         self.clock = tk.Label(self.dash, text="")
         self.clock.pack(side=tk.LEFT, fill=tk.BOTH)
@@ -74,9 +91,8 @@ class WxFrame( tk.Tk ):
                             font= (self.dash_font[0], int(self.dash_font[1]/2.)),
                             padx=20, pady=10)
         
-        
         # Display image
-        show_img( nws_meteogram[1], .3, .4 )
+        show_img( ab_pac_mslp_anom[1], .3, .4 )
         
         # Initialize update cycles
         self.update_clock()
@@ -104,6 +120,14 @@ class WxFrame( tk.Tk ):
         string = get_synopsis()
         self.synopsis.config(text = string)
         self.synopsis.after(1800000, self.update_synopsis)
+        
+    def turn_page( self ):
+        #
+        if self.current_page < 4:
+            self.current_page+=1
+        else:
+            self.current_page = 0
+        self.headtext.config(text = self.pages[self.current_page])
 
 
 if __name__ == "__main__":
