@@ -2,44 +2,35 @@
 
 Retrieve sunrise/sunset data from web
 
-## Takes too long, should replace with requests-based functions
-
 """
-
-from selenium import webdriver
-
-driverpath = "<path to geckodriver>"
-
-
-def open_webdriver( ):
-    options = webdriver.firefox.options.Options()
-    options.add_argument('--headless')
-    return webdriver.Firefox(executable_path=driverpath, options=options)
-
-
-def get_riseset( ):
-    try:
-        #
-        driver = open_webdriver()
-        driver.get("https://sunrise-sunset.org/us/pacific-grove-ca")
     
-        #
-        today = driver.find_element_by_id('today')
-        sunrise = today.find_element_by_class_name('sunrise').find_element_by_class_name('time')
-        sunrise_str = "0"+sunrise.text[:4]
+import requests
+from nws_read import remove_html
+
+srss_url = "https://sunrise-sunset.org/us/pacific-grove-ca"
+
+
+def get_riseset( url=srss_url ):
+    # Open the url
+    r = requests.get( url, stream = True )
     
-        #
-        sunset  = today.find_element_by_class_name('sunset').find_element_by_class_name('time')
-        sunset_str = sunset.text[:4]
-        sunset_str = str(int(sunset.text[:1])+12)+sunset.text[1:4]
+    # Check if the webpage was retrieved successfully
+    if r.status_code == 200:
+        content = r.text
+        # Trim text down to sunrise only
+        sunrise = content[ content.find('Sunrise time:')+14 : content.find('Sunrise time:')+40 ]
+        sunrise = "0" + remove_html(sunrise)[:4]
+        # Trim test down to sunset only
+        sunset  = content[ content.find('Sunset time:')+13 : content.find('Sunset time:')+40]
+        sunset  = remove_html(sunset)[:4]
+        # Convert sunset to 24 hour time
+        sunset  = str(int(sunset[:1])+12)+sunset[1:4]
+    else:
+        print(url)
+        raise RuntimeWarning("Couldn't access webpage!")
         
-        driver.close()
-        
-        return sunrise_str, sunset_str
-    except:
-        return "NaN", "NaN"
+    return sunrise, sunset
 
 
-    
 if __name__ == "__main__":
     print( get_riseset() )

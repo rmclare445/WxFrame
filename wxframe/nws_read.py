@@ -6,7 +6,9 @@ Retrieve information from NWS website
 
 import requests
 
-def get_synopsis( url="https://forecast.weather.gov/product.php?site=NWS&issuedby=MTR&product=AFD&format=CI&version=1&glossary=1&highlight=off" ):
+nws_url = "https://forecast.weather.gov/product.php?site=NWS&issuedby=MTR&product=AFD&format=CI&version=1&glossary=1&highlight=off"
+
+def get_synopsis( url=nws_url ):
     # Open the url
     r = requests.get( url, stream = True )
     
