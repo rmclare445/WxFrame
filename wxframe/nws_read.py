@@ -17,12 +17,14 @@ def get_synopsis( url=nws_url ):
         content = r.text
         # Trim text down to synopsis only
         synopsis = content[ content.find(".SYNOPSIS.")+12 : content.find(".DISCUSSION.")-6 ]
-        synopsis = remove_html(synopsis)#.replace("\n", "")
+        synopsis = remove_html(synopsis)
+        marine   = content[ content.find(".MARINE.")+10 : content.find(".MTR WATCHES/WARNINGS/ADVISORIES.")-6 ]
+        marine   = remove_html(marine)
     else:
         print(url)
         raise RuntimeWarning("Couldn't access webpage!")
         
-    return synopsis
+    return synopsis, marine
 
 def remove_html( string ):
     # Remove all html commands enclosed by <>
@@ -35,7 +37,10 @@ def remove_html( string ):
             text = True
         elif text:
             new = new + i
-    return new
+    return rm_text( new )
+
+def rm_text( string ):
+    return string.replace("-- End Changed Discussion --", "").replace("-- Changed Discussion --", "").replace("\n", " ")
 
 if __name__ == "__main__":
     print( get_synopsis() )
