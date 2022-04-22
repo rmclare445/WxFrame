@@ -15,6 +15,8 @@ Page 2,3,.. - What's going on around the country/world
 
 ## update cycles every minute but with specific time conditionals
 
+## when page is on "Pacific," switch synopsis to .MARINE. section of page
+
 """
 
 import tkinter as tk
@@ -39,7 +41,7 @@ class WxFrame( tk.Tk ):
         # Exit on Esc
         self.bind( "<Escape>", lambda x: self.destroy() )
         # Turn page on Enter ## will be amended to GPIO input on Pi
-        self.bind( "<Return>", lambda x: self.turn_page())
+        self.bind( "<Return>", lambda x: self.turn_page() )
         
         # Get screen resources
         self.width  = self.winfo_screenwidth()
@@ -47,13 +49,13 @@ class WxFrame( tk.Tk ):
         
         # Get new images
         print("Getting updated images")
-        get_imgs()
+        #get_imgs()
         print("Updated images retrieved")
         
         # Establish pages
         self.pages = ['Local', 'CONUS', 'Pacific', 'Global', 'Forecast']
         
-        # 
+        # Make header with page name
         self.header = tk.Frame( self, relief=tk.RAISED, borderwidth=4 )
         self.header.place(relx=0, rely=0, anchor="nw")
         self.headtext = tk.Label( self.header, text="Local" )
@@ -80,19 +82,33 @@ class WxFrame( tk.Tk ):
         self.riseset.config(fg="white", bg="red", font=self.dash_font,
                             padx=20, pady=15)
         # Make exterior data label
-        self.exterior = tk.Label(self.dash, text="67\u00B0\n58%")
+        self.exterior = tk.Label(self.dash, text="52\u00B0\n31\u00B0")
         self.exterior.pack(side=tk.LEFT, fill=tk.BOTH)
-        self.exterior.config(fg="white", bg="SkyBlue4", font=self.dash_font,
-                             padx=20, pady=15)
+        self.exterior.config(fg="white", bg="grey2", font=self.dash_font,
+                            padx=20, pady=15)
+        # Make interior data label
+        self.interior = tk.Label(self.dash, text="68\u00B0\n51\u00B0")
+        self.interior.pack(side=tk.LEFT, fill=tk.BOTH, padx=1)
+        self.interior.config(fg="white", bg="grey8", font=self.dash_font,
+                            padx=20, pady=15)
         # Make NWS synopsis label
         self.synopsis = tk.Label(self.dash, text=" ")
         self.synopsis.pack(side=tk.LEFT, fill=tk.BOTH)
         self.synopsis.config(fg="white", bg="grey16", 
                             font= (self.dash_font[0], int(self.dash_font[1]/2.)),
-                            padx=20, pady=10)
+                            padx=20, pady=10, wraplength=1000)
+        
+        # #                             #
+        # #     Body configuration      # ## might be a huge mistake
+        # #  _________________________  #
+        # self.body = tk.Frame( self )
+        # self.body.place(relx=0.5, rely=0.4, anchor="center")
+        # #
+        # self.pic = tk.Label( self.body, image=pw_conus_maxtemp[1])
+        # self.pic.place()
         
         # Display image
-        show_img( ab_pac_mslp_anom[1], .3, .4 )
+        show_img( nws_meteogram[1], .3, .4 )
         
         # Initialize update cycles
         self.update_clock()
@@ -117,8 +133,11 @@ class WxFrame( tk.Tk ):
         self.riseset.after(1800000, self.update_riseset)
         
     def update_synopsis( self ):
-        string = get_synopsis()
-        self.synopsis.config(text = string)
+        synops, marine = get_synopsis()
+        if self.pages[self.current_page] == 'Pacific':
+            self.synopsis.config(text = marine, font=(self.dash_font[0], int(5*self.dash_font[1]/12.)))
+        else:
+            self.synopsis.config(text = synops, font=(self.dash_font[0], int(self.dash_font[1]/2.)))
         self.synopsis.after(1800000, self.update_synopsis)
         
     def turn_page( self ):
@@ -128,6 +147,7 @@ class WxFrame( tk.Tk ):
         else:
             self.current_page = 0
         self.headtext.config(text = self.pages[self.current_page])
+        self.update_synopsis()
 
 
 if __name__ == "__main__":
