@@ -7,15 +7,11 @@ Page 2,3,.. - What's going on around the country/world
 
 ## should add tides to dashboard
 
-## should make dashboard configuration a function
-
-## add current conditions to dash (outdoor/indoor temp, hum)
+## buoy table on Pacific page
 
 ## integrate with thermostat and ESP-2866 weather station
 
 ## update cycles every minute but with specific time conditionals
-
-## when page is on "Pacific," switch synopsis to .MARINE. section of page
 
 """
 
@@ -65,80 +61,13 @@ class WxFrame( tk.Tk ):
                              padx=10, pady=5)
         self.current_page = 0
         
-        #                             #
-        #   Dashboard configuration   #
-        #  _________________________  #
-        self.dash = tk.Frame( self, relief=tk.RAISED, borderwidth=4 )
-        self.dash.place(relx=0, rely=1, anchor="sw")
-        self.dash_font = (self.globfont, int(self.height/36.), 'bold')
-        # Make clock
-        self.clock = tk.Label(self.dash, text="")
-        self.clock.pack(side=tk.LEFT, fill=tk.BOTH)
-        self.clock.config(fg="white", bg="navy", font=self.dash_font,
-                          padx=20, pady=15)
-        # Make sunrise/set label
-        self.riseset = tk.Label(self.dash, text="")
-        self.riseset.pack(side=tk.LEFT, fill=tk.BOTH, padx=1)
-        self.riseset.config(fg="white", bg="red", font=self.dash_font,
-                            padx=20, pady=15)
-        # Make exterior data label
-        self.exterior = tk.Label(self.dash, text="52\u00B0\n31\u00B0")
-        self.exterior.pack(side=tk.LEFT, fill=tk.BOTH)
-        self.exterior.config(fg="white", bg="grey2", font=self.dash_font,
-                            padx=20, pady=15)
-        # Make interior data label
-        self.interior = tk.Label(self.dash, text="68\u00B0\n51\u00B0")
-        self.interior.pack(side=tk.LEFT, fill=tk.BOTH, padx=1)
-        self.interior.config(fg="white", bg="grey8", font=self.dash_font,
-                            padx=20, pady=15)
-        # Make NWS synopsis label
-        self.synopsis = tk.Label(self.dash, text=" ")
-        self.synopsis.pack(side=tk.LEFT, fill=tk.BOTH)
-        self.synopsis.config(fg="white", bg="grey16", 
-                            font= (self.dash_font[0], int(self.dash_font[1]/2.)),
-                            padx=20, pady=10, wraplength=1000)
-        
-        # #                             #
-        # #     Body configuration      # ## might be a huge mistake
-        # #  _________________________  #
-        # self.body = tk.Frame( self )
-        # self.body.place(relx=0.5, rely=0.4, anchor="center")
-        # #
-        # self.pic = tk.Label( self.body, image=pw_conus_maxtemp[1])
-        # self.pic.place()
-        
         # Display image
         show_img( nws_meteogram[1], .3, .4 )
         
-        # Initialize update cycles
-        self.update_clock()
-        self.update_riseset()
-        self.update_synopsis()
+        self.dash = Dashboard(self)
         
         # Initialization period over
         self.init = False
-        
-    def update_clock( self ):
-        string = strftime("%a, %d %b %Y\n%H:%M:%S")
-        self.clock.config(text = string)
-        self.clock.after(1000, self.update_clock)
-        
-    def update_riseset( self ):
-        # Only retrieve data on initializaiton or if it's midnight
-        if self.init or strftime("%H") == "00":
-            self.sr, self.ss = get_riseset()
-            string = "%s \u25b2\n%s \u25bc" % (self.sr, self.ss)
-            self.riseset.config(text = string)
-        # Update every 30 minutes
-        self.riseset.after(1800000, self.update_riseset)
-        
-    def update_synopsis( self ):
-        synops, marine = get_synopsis()
-        if self.pages[self.current_page] == 'Pacific':
-            self.synopsis.config(text = marine, font=(self.dash_font[0], int(5*self.dash_font[1]/12.)))
-        else:
-            self.synopsis.config(text = synops, font=(self.dash_font[0], int(self.dash_font[1]/2.)))
-        self.synopsis.after(1800000, self.update_synopsis)
         
     def turn_page( self ):
         #
@@ -147,7 +76,71 @@ class WxFrame( tk.Tk ):
         else:
             self.current_page = 0
         self.headtext.config(text = self.pages[self.current_page])
-        self.update_synopsis()
+        self.dash.update_synopsis( self )
+
+
+
+class Dashboard( tk.Frame ):
+    def __init__(self, parent):#, controller):
+        tk.Frame.__init__(self, parent, relief=tk.RAISED, borderwidth=4 )
+        
+        self.place(relx=0, rely=1, anchor="sw")
+        self.dash_font = (parent.globfont, int(parent.height/40.), 'bold')
+        
+        # Make clock
+        self.clock = tk.Label(self, text="")
+        self.clock.pack(side=tk.LEFT, fill=tk.BOTH)
+        self.clock.config(fg="white", bg="navy", font=self.dash_font,
+                          padx=20, pady=15)
+        self.update_clock( )
+        # Make sunrise/set label
+        self.riseset = tk.Label(self, text="")
+        self.riseset.pack(side=tk.LEFT, fill=tk.BOTH, padx=1)
+        self.riseset.config(fg="white", bg="red", font=self.dash_font,
+                            padx=10, pady=15)
+        self.update_riseset( parent )
+        # Make exterior data label
+        self.exterior = tk.Label(self, text="52\u00B0\n31\u00B0")
+        self.exterior.pack(side=tk.LEFT, fill=tk.BOTH)
+        self.exterior.config(fg="white", bg="grey2", font=self.dash_font,
+                            padx=10, pady=15)
+        # Make interior data label
+        self.interior = tk.Label(self, text="68\u00B0\n51\u00B0")
+        self.interior.pack(side=tk.LEFT, fill=tk.BOTH, padx=1)
+        self.interior.config(fg="white", bg="grey8", font=self.dash_font,
+                            padx=10, pady=15)
+        # Make NWS synopsis label
+        self.synopsis = tk.Label(self, text=" ")
+        self.synopsis.pack(side=tk.LEFT, fill=tk.BOTH)
+        self.synopsis.config(fg="white", bg="grey16", 
+                            font= (self.dash_font[0], int(self.dash_font[1]/2.)),
+                            padx=10, pady=10, wraplength=1000)
+        self.update_synopsis( parent )
+        
+        
+    def update_clock( self ):
+        string = strftime("%a, %d %b %Y\n%H:%M:%S")
+        self.clock.config(text = string)
+        self.clock.after(1000, self.update_clock)
+        
+    def update_riseset( self, parent ):
+        # Only retrieve data on initializaiton or if it's midnight
+        if parent.init or strftime("%H") == "00":
+            sr, ss = get_riseset()
+            string = "%s \u25b2\n%s \u25bc" % (sr, ss)
+            self.riseset.config(text = string)
+        # Update every 30 minutes
+        self.riseset.after(1800000, self.update_riseset)
+        
+    def update_synopsis( self, parent ):
+        # Get standard and marine synopses from NWS
+        synops, marine = get_synopsis()
+        content = marine if parent.pages[parent.current_page] == 'Pacific' else synops
+        multiplier = 0.55 * (1. - len(content)/2700.)
+        self.synopsis.config(text = content, font=(self.dash_font[0], int(self.dash_font[1]*multiplier)))
+        self.synopsis.after(1800000, self.update_synopsis)
+        
+
 
 
 if __name__ == "__main__":
