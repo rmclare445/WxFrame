@@ -39,7 +39,10 @@ class WxFrame( tk.Tk ):
         # Exit on Esc
         self.bind( "<Escape>", lambda x: self.destroy() )
         # Turn page on Enter ## will be amended to GPIO input on Pi
-        self.bind( "<Return>", lambda x: self.turn_page() )
+        #self.bind( "<Return>", lambda x: self.turn_page() )
+        # Bind all the number keys with the callback function
+        for i in range(10):
+           self.bind(str(i), self.toggle_page)
         
         # Get screen resources
         self.width  = self.winfo_screenwidth()
@@ -85,6 +88,12 @@ class WxFrame( tk.Tk ):
         # self.headtext.config(text = self.pages[self.current_page])
         # self.dash.update_synopsis( self )
         #self.current_page = abs( self.current_page - 1 )
+        self.ps[self.current_page].show()
+        
+    def toggle_page( self, n ):
+        #
+        self.ps[self.current_page].disappear()
+        self.current_page = int(n.char)
         self.ps[self.current_page].show()
 
 
