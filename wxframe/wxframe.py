@@ -17,6 +17,7 @@ Page 2,3,.. - What's going on around the country/world
 
 import tkinter as tk
 #from tkinter  import ttk
+import nexrad as nx
 from get_img  import *
 from riseset  import get_riseset
 from nws_read import get_synopsis
@@ -34,6 +35,7 @@ class WxFrame( tk.Tk ):
         self.globfont = 'lucida'
         # Clarify initialization period
         self.init = True
+        self.current_page = 0
         # Exit on Esc
         self.bind( "<Escape>", lambda x: self.destroy() )
         # Turn page on Enter ## will be amended to GPIO input on Pi
@@ -46,6 +48,7 @@ class WxFrame( tk.Tk ):
         # Get new images
         print("Getting updated images")
         #get_imgs()
+        #nx.get_nexrad()
         print("Updated images retrieved")
         
         # Establish pages
@@ -59,31 +62,108 @@ class WxFrame( tk.Tk ):
         self.headtext.config(fg="white", bg="black", 
                              font=(self.globfont, int(self.height/36.), 'italic'),
                              padx=10, pady=5)
-        self.current_page = 0
         
-        # Display image
-        show_img( nws_meteogram[1], .3, .4 )
-        
+        # Display dashboard
         self.dash = Dashboard(self)
+        # Display first page
+        self.p00 = Page00(self)
+        self.p01 = Page01(self)
+        self.p02 = Page02(self)
+        self.ps  = [self.p00, self.p01, self.p02]
+        self.ps[0].show()
         
         # Initialization period over
         self.init = False
         
     def turn_page( self ):
         #
-        if self.current_page < 4:
+        self.ps[self.current_page].disappear()
+        if self.current_page < 2:
             self.current_page+=1
         else:
             self.current_page = 0
-        self.headtext.config(text = self.pages[self.current_page])
-        self.dash.update_synopsis( self )
+        # self.headtext.config(text = self.pages[self.current_page])
+        # self.dash.update_synopsis( self )
+        #self.current_page = abs( self.current_page - 1 )
+        self.ps[self.current_page].show()
 
+
+class Page00( tk.Frame ):
+    def __init__(self, parent):
+        tk.Frame.__init__(self, parent)
+        # Display image
+        self.xx=0.3
+        self.yy=0.4
+        self.path = nws_meteogram[1]
+        
+    def show( self ):
+        self.img = Image.open(self.path)
+        self.test = ImageTk.PhotoImage(self.img)
+        
+        self.label = tk.Label(image=self.test)
+        self.label.image = self.test
+        
+        # Position image
+        self.label.place(anchor='center', relx=self.xx, rely=self.yy)
+        
+    def disappear( self ):
+        self.label.destroy()
+
+
+class Page01( tk.Frame ):
+    def __init__(self, parent):
+        tk.Frame.__init__(self, parent)
+        # Display image
+        self.xx=0.3
+        self.yy=0.4
+        self.path = cdip_swell[1]
+        
+    def show( self ):
+        self.img = Image.open(self.path)
+        self.test = ImageTk.PhotoImage(self.img)
+        
+        self.label = tk.Label(image=self.test)
+        self.label.image = self.test
+        
+        # Position image
+        self.label.place(anchor='center', relx=self.xx, rely=self.yy)
+        
+    def disappear( self ):
+        self.label.destroy()
+
+
+class Page02( tk.Frame ):
+    def __init__(self, parent):
+        tk.Frame.__init__(self, parent)
+        self.c =0
+        
+    def disp( self ):
+        self.img = Image.open(nx.nexrad_loc+nx.nexrad_lst[self.c])
+        self.test = ImageTk.PhotoImage(self.img)
+        self.label = tk.Label(image=self.test)
+        self.label.image = self.test
+        self.label.place(anchor='center', relx=0.5, rely=0.45)
+        
+    def show( self ):
+        self.disp()
+        self.cycle()
+        
+    def disappear( self ):
+        self.label.destroy()
+        
+    def cycle( self ):
+        if self.c == 19:
+            self.c = 0
+        else:
+            self.c = self.c + 1
+        self.label.destroy()
+        self.disp()
+        self.label.after(100, self.cycle)
 
 
 class Dashboard( tk.Frame ):
-    def __init__(self, parent):#, controller):
+    def __init__(self, parent):
         tk.Frame.__init__(self, parent, relief=tk.RAISED, borderwidth=4 )
-        
         self.place(relx=0, rely=1, anchor="sw")
         self.dash_font = (parent.globfont, int(parent.height/40.), 'bold')
         
@@ -117,7 +197,6 @@ class Dashboard( tk.Frame ):
                             padx=10, pady=10, wraplength=1000)
         self.update_synopsis( parent )
         
-        
     def update_clock( self ):
         string = strftime("%a, %d %b %Y\n%H:%M:%S")
         self.clock.config(text = string)
@@ -140,8 +219,6 @@ class Dashboard( tk.Frame ):
         self.synopsis.config(text = content, font=(self.dash_font[0], int(self.dash_font[1]*multiplier)))
         self.synopsis.after(1800000, self.update_synopsis)
         
-
-
 
 if __name__ == "__main__":
     app = WxFrame()

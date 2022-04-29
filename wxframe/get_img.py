@@ -6,7 +6,7 @@ Retrieve images from the web
 
 import shutil
 import requests
-import tkinter as tk
+#import tkinter as tk
 import config.locs
 from PIL import Image, ImageTk
 
