@@ -40,7 +40,7 @@ cdip_swell_url = "http://cdip.ucsd.edu/recent/model_images/monterey.png"
 # NWS Pacific Grove meteogram
 nws_meteogram_url = "https://forecast.weather.gov/meteograms/Plotter.php?lat=36.6285&lon=-121.9352&wfo=MTR&zcode=CAZ530&gset=18&gdiff=3&unit=0&tinfo=PY8&ahour=0&pcmd=11011111111110000000000000000000000000000000000000000000000&lg=en&indu=1!1!1!&dd=&bw=&hrspan=48&pqpfhr=6&psnwhr=6"
 
-#
+# Local directory for downloaded images
 img_dir = config.locs.image_dir
 # Each image data (source url, local dir+filename)
 pw_conus_maxtemp = ( pw_conus_maxtemp_url, img_dir+"pw_conus_maxtemp.png" )
@@ -115,17 +115,17 @@ def get_imgs( ):
     for img in images[4:12]:
         crop_bentleys( img[1] )
         
-def show_img( path, xx=0, yy=0 ):
-    # Create a photoimage object of the image in the path
-    image = Image.open(path)
-    test = ImageTk.PhotoImage(image)
+# def show_img( path, xx=0, yy=0 ):
+#     # Create a photoimage object of the image in the path
+#     image = Image.open(path)
+#     test = ImageTk.PhotoImage(image)
     
-    label = tk.Label(image=test)
-    label.image = test
+#     label = tk.Label(image=test)
+#     label.image = test
     
-    # Position image
-    label.place(anchor='center', relx=xx, rely=yy)
-    #label.pack()
+#     # Position image
+#     label.place(anchor='center', relx=xx, rely=yy)
+#     #label.pack()
 
 
 if __name__ == "__main__":

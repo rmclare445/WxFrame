@@ -9,6 +9,10 @@ Page 2,3,.. - What's going on around the country/world
 
 ## buoy table on Pacific page
 
+## combine goes.py and nexrad.py into one module
+
+## combine Page02 and Page03 into one class
+
 ## integrate with thermostat and ESP-2866 weather station
 
 ## update cycles every minute but with specific time conditionals
@@ -20,6 +24,8 @@ Page 2,3,.. - What's going on around the country/world
 import tkinter as tk
 import pages   as pg
 from dashboard import Dashboard
+from nexrad    import get_nexrad
+from goes      import get_goes
 
 
 class WxFrame( tk.Tk ):
@@ -49,11 +55,20 @@ class WxFrame( tk.Tk ):
         # Get new images
         print("Getting updated images")
         #get_imgs()
-        #nx.get_nexrad()
+        #get_nexrad()
+        #get_goes()
         print("Updated images retrieved")
         
-        # Establish pages
-        #self.pages = ['Local', 'CONUS', 'Pacific', 'Global', 'Forecast']
+        # Initialize pages
+        self.p00 = pg.Page00(self)
+        self.p01 = pg.Page01(self)
+        self.p02 = pg.Page02(self)
+        self.p03 = pg.Page03(self)
+        self.ps  = [self.p00, self.p01, self.p02, self.p03]
+        self.ps[0].show()
+        
+        # Display dashboard
+        self.dash = Dashboard(self)
         
         # Make header with page name
         self.header = tk.Frame( self, relief=tk.RAISED, borderwidth=4 )
@@ -63,17 +78,7 @@ class WxFrame( tk.Tk ):
         self.headtext.config(fg="white", bg="black", 
                              font=(self.globfont, int(self.height/36.), 'italic'),
                              padx=10, pady=5)
-        
-        # Display first page
-        self.p00 = pg.Page00(self)
-        self.p01 = pg.Page01(self)
-        self.p02 = pg.Page02(self)
-        self.ps  = [self.p00, self.p01, self.p02]
-        self.ps[0].show()
         self.headtext.config(text = self.ps[0].name)
-        
-        # Display dashboard
-        self.dash = Dashboard(self)
         
         # Initialization period over
         self.init = False
@@ -94,9 +99,10 @@ class WxFrame( tk.Tk ):
         # Select page from numerical input (n)
         self.ps[self.current_page].disappear()
         self.current_page = int(n.char)
-        self.headtext.config(text = self.ps[self.current_page].name)
         self.dash.update_synopsis( self )
+        self.headtext.config(text = self.ps[self.current_page].name)
         self.ps[self.current_page].show()
+        #self.header.tkraise()
         
 
 if __name__ == "__main__":
