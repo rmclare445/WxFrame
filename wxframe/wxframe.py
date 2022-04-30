@@ -13,11 +13,12 @@ Page 2,3,.. - What's going on around the country/world
 
 ## update cycles every minute but with specific time conditionals
 
+## updates should be managed by a separate block of function(s) in a new file which ingest the WxFrame as a parent
+
 """
 
 import tkinter as tk
-#from tkinter  import ttk
-import nexrad as nx
+import pages   as pg
 from get_img  import *
 from riseset  import get_riseset
 from nws_read import get_synopsis
@@ -60,114 +61,45 @@ class WxFrame( tk.Tk ):
         # Make header with page name
         self.header = tk.Frame( self, relief=tk.RAISED, borderwidth=4 )
         self.header.place(relx=0, rely=0, anchor="nw")
-        self.headtext = tk.Label( self.header, text="Local" )
+        self.headtext = tk.Label( self.header, text="" )
         self.headtext.pack( )
         self.headtext.config(fg="white", bg="black", 
                              font=(self.globfont, int(self.height/36.), 'italic'),
                              padx=10, pady=5)
         
-        # Display dashboard
-        self.dash = Dashboard(self)
         # Display first page
-        self.p00 = Page00(self)
-        self.p01 = Page01(self)
-        self.p02 = Page02(self)
+        self.p00 = pg.Page00(self)
+        self.p01 = pg.Page01(self)
+        self.p02 = pg.Page02(self)
         self.ps  = [self.p00, self.p01, self.p02]
         self.ps[0].show()
+        self.headtext.config(text = self.ps[0].name)
+        
+        # Display dashboard
+        self.dash = Dashboard(self)
         
         # Initialization period over
         self.init = False
         
-    def turn_page( self ):
-        #
-        self.ps[self.current_page].disappear()
-        if self.current_page < 2:
-            self.current_page+=1
-        else:
-            self.current_page = 0
-        # self.headtext.config(text = self.pages[self.current_page])
-        # self.dash.update_synopsis( self )
-        #self.current_page = abs( self.current_page - 1 )
-        self.ps[self.current_page].show()
+    # def turn_page( self ):
+    #     #
+    #     self.ps[self.current_page].disappear()
+    #     if self.current_page < 2:
+    #         self.current_page+=1
+    #     else:
+    #         self.current_page = 0
+    #     self.headtext.config(text = self.ps[self.current_page].name)
+    #     # self.dash.update_synopsis( self )
+    #     #self.current_page = abs( self.current_page - 1 )
+    #     self.ps[self.current_page].show()
         
     def toggle_page( self, n ):
         #
         self.ps[self.current_page].disappear()
         self.current_page = int(n.char)
+        self.headtext.config(text = self.ps[self.current_page].name)
+        self.dash.update_synopsis( self )
         self.ps[self.current_page].show()
-
-
-class Page00( tk.Frame ):
-    def __init__(self, parent):
-        tk.Frame.__init__(self, parent)
-        # Display image
-        self.xx=0.3
-        self.yy=0.4
-        self.path = nws_meteogram[1]
-        
-    def show( self ):
-        self.img = Image.open(self.path)
-        self.test = ImageTk.PhotoImage(self.img)
-        
-        self.label = tk.Label(image=self.test)
-        self.label.image = self.test
-        
-        # Position image
-        self.label.place(anchor='center', relx=self.xx, rely=self.yy)
-        
-    def disappear( self ):
-        self.label.destroy()
-
-
-class Page01( tk.Frame ):
-    def __init__(self, parent):
-        tk.Frame.__init__(self, parent)
-        # Display image
-        self.xx=0.3
-        self.yy=0.4
-        self.path = cdip_swell[1]
-        
-    def show( self ):
-        self.img = Image.open(self.path)
-        self.test = ImageTk.PhotoImage(self.img)
-        
-        self.label = tk.Label(image=self.test)
-        self.label.image = self.test
-        
-        # Position image
-        self.label.place(anchor='center', relx=self.xx, rely=self.yy)
-        
-    def disappear( self ):
-        self.label.destroy()
-
-
-class Page02( tk.Frame ):
-    def __init__(self, parent):
-        tk.Frame.__init__(self, parent)
-        self.c =0
-        
-    def disp( self ):
-        self.img = Image.open(nx.nexrad_loc+nx.nexrad_lst[self.c])
-        self.test = ImageTk.PhotoImage(self.img)
-        self.label = tk.Label(image=self.test)
-        self.label.image = self.test
-        self.label.place(anchor='center', relx=0.5, rely=0.45)
-        
-    def show( self ):
-        self.disp()
-        self.cycle()
-        
-    def disappear( self ):
-        self.label.destroy()
-        
-    def cycle( self ):
-        if self.c == 19:
-            self.c = 0
-        else:
-            self.c = self.c + 1
-        self.label.destroy()
-        self.disp()
-        self.label.after(100, self.cycle)
 
 
 class Dashboard( tk.Frame ):
@@ -223,7 +155,7 @@ class Dashboard( tk.Frame ):
     def update_synopsis( self, parent ):
         # Get standard and marine synopses from NWS
         synops, marine = get_synopsis()
-        content = marine if parent.pages[parent.current_page] == 'Pacific' else synops
+        content = marine if parent.ps[parent.current_page].name == 'Marine' else synops
         multiplier = 0.55 * (1. - len(content)/2700.)
         self.synopsis.config(text = content, font=(self.dash_font[0], int(self.dash_font[1]*multiplier)))
         self.synopsis.after(1800000, self.update_synopsis)
