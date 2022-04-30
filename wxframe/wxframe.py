@@ -164,3 +164,4 @@ class Dashboard( tk.Frame ):
 if __name__ == "__main__":
     app = WxFrame()
     app.mainloop()
+    ## GPIO cleanup for RPi

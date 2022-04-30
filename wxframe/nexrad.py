@@ -16,11 +16,9 @@ def get_nexrad( ):
     for img in nexrad_lst:
         # Open the url
         r = requests.get( nexrad_url+img, stream = True )
-    
         # Check if the webpage was retrieved successfully
         if r.status_code == 200:
             r.raw.decode_content = True
-            
             filename = nexrad_loc + img
             with open(filename,'wb') as f:
                 shutil.copyfileobj(r.raw, f)
