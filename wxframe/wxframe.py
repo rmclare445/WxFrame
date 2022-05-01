@@ -7,7 +7,9 @@ Page 2,3,.. - What's going on around the country/world
 
 ## should add tides to dashboard
 
-## buoy table on Pacific page
+## buoy table on Pacific page (UPDATES; it already refreshes every time it's called but it should periodically, too)
+
+## should move remove_html and rm_parentesis to their own text handling module
 
 ## combine goes.py and nexrad.py into one module
 
@@ -19,6 +21,11 @@ Page 2,3,.. - What's going on around the country/world
 
 ## updates should be managed by a separate block of function(s) in a new file which ingest the WxFrame as a parent
 
+## add a function to page classes with animations to pause the animations
+
+## def halfhour_update( parent ):
+##    parent.thing.update()
+
 """
 
 import tkinter as tk
@@ -26,6 +33,7 @@ import pages   as pg
 from dashboard import Dashboard
 from nexrad    import get_nexrad
 from goes      import get_goes
+from get_img   import get_imgs
 
 
 class WxFrame( tk.Tk ):
