@@ -16,10 +16,10 @@ def get_riseset( url=srss_url ):
     # Check if the webpage was retrieved successfully
     if r.status_code == 200:
         content = r.text
-        # Trim text down to sunrise only
+        # Trim text down to sunrise time only
         sunrise = content[ content.find('Sunrise time:')+14 : content.find('Sunrise time:')+40 ]
         sunrise = "0" + remove_html(sunrise)[:4]
-        # Trim test down to sunset only
+        # Trim text down to sunset time only
         sunset  = content[ content.find('Sunset time:')+13 : content.find('Sunset time:')+40]
         sunset  = remove_html(sunset)[:4]
         # Convert sunset to 24 hour time

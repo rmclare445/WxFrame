@@ -6,7 +6,7 @@ Retrieve images from the web
 
 import shutil
 import requests
-import tkinter as tk
+#import tkinter as tk
 import config.locs
 from PIL import Image, ImageTk
 
@@ -39,10 +39,8 @@ ab_pac_700wnd_pw_url = ab_pac_loc + "700wind_pw/700wind_pw_57.png"
 cdip_swell_url = "http://cdip.ucsd.edu/recent/model_images/monterey.png"
 # NWS Pacific Grove meteogram
 nws_meteogram_url = "https://forecast.weather.gov/meteograms/Plotter.php?lat=36.6285&lon=-121.9352&wfo=MTR&zcode=CAZ530&gset=18&gdiff=3&unit=0&tinfo=PY8&ahour=0&pcmd=11011111111110000000000000000000000000000000000000000000000&lg=en&indu=1!1!1!&dd=&bw=&hrspan=48&pqpfhr=6&psnwhr=6"
-# National NEXRAD
-nexrad_url = "https://preview-radar.weather.gov/ridge/lite/CONUS_loop.gif"
 
-#
+# Local directory for downloaded images
 img_dir = config.locs.image_dir
 # Each image data (source url, local dir+filename)
 pw_conus_maxtemp = ( pw_conus_maxtemp_url, img_dir+"pw_conus_maxtemp.png" )
@@ -59,7 +57,6 @@ ab_pac_850thetae = ( ab_pac_850thetae_url, img_dir+"ab_pac_850thetae.png" )
 ab_pac_700wnd_pw = ( ab_pac_700wnd_pw_url, img_dir+"ab_pac_700wnd_pw.png" )
 cdip_swell       = ( cdip_swell_url,       img_dir+"cdip_swell.png"       )
 nws_meteogram    = ( nws_meteogram_url,    img_dir+"nws_meteogram.png"    )
-nexrad           = ( nexrad_url,           img_dir+"nexrad.gif "          )
 
 # All image data
 images = ( pw_conus_maxtemp, pw_conus_mintemp, pw_conus_24hrqpf,
@@ -67,43 +64,24 @@ images = ( pw_conus_maxtemp, pw_conus_mintemp, pw_conus_24hrqpf,
            ab_con_capeshear, ab_con_mslp_jets, ab_pac_mslp_anom, 
            ab_pac_6hrprecip, ab_pac_850thetae, ab_pac_700wnd_pw,
            cdip_swell, nws_meteogram  )
-# All GIF data
-#gifs   = ( nexrad )
 
 
 def get_img( url, filename ):
-    # Open the url image, set stream to True, this will return the stream content.
-    r = requests.get( url, stream = True )
-    
+    try:
+        r = requests.get( url, stream = True )
+    except:
+        return
     # Check if the image was retrieved successfully
     if r.status_code == 200:
         # Set decode_content value to True, otherwise the downloaded image file's size will be zero.
         r.raw.decode_content = True
-    
         with open(filename,'wb') as f:
             shutil.copyfileobj(r.raw, f)
-        
     else:
         print(url)
         raise RuntimeWarning("Couldn't download image!")
-        
-        
-# def get_gif( url=nexrad_url, filename="nexrad.gif" ):
-    
-#     get_img( url, filename )
-    
-#     frameCnt = 10
-#     frames = [tk.PhotoImage(file=filename,format = 'gif -index %i' %(i)) for i in range(frameCnt)]
-        
-#     print(frames)
-    
-    
-# def show_gif( filename="nexrad.gif" ):
-    
-#     frameCnt = 10
-#     frames = [tk.PhotoImage(file=filename,format = 'gif -index %i' %(i)) for i in range(frameCnt)]
-    
-    
+
+
 def crop_bentleys( path, debug=False ):
     # Opens a image in RGB mode
     im = Image.open(path)
@@ -139,17 +117,17 @@ def get_imgs( ):
     for img in images[4:12]:
         crop_bentleys( img[1] )
         
-def show_img( path, xx=0, yy=0 ):
-    # Create a photoimage object of the image in the path
-    image = Image.open(path)
-    test = ImageTk.PhotoImage(image)
+# def show_img( path, xx=0, yy=0 ):
+#     # Create a photoimage object of the image in the path
+#     image = Image.open(path)
+#     test = ImageTk.PhotoImage(image)
     
-    label = tk.Label(image=test)
-    label.image = test
+#     label = tk.Label(image=test)
+#     label.image = test
     
-    # Position image
-    label.place(anchor='center', relx=xx, rely=yy)
-    #label.pack()
+#     # Position image
+#     label.place(anchor='center', relx=xx, rely=yy)
+#     #label.pack()
 
 
 if __name__ == "__main__":
