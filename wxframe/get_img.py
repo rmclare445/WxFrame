@@ -37,8 +37,9 @@ ab_pac_850thetae_url = ab_pac_loc + "850_thetae/850_thetae_57.png"
 ab_pac_700wnd_pw_url = ab_pac_loc + "700wind_pw/700wind_pw_57.png"
 # Coastal Data Information Program swell map
 cdip_swell_url = "http://cdip.ucsd.edu/recent/model_images/monterey.png"
-# NWS Pacific Grove meteogram
-nws_meteogram_url = "https://forecast.weather.gov/meteograms/Plotter.php?lat=36.6285&lon=-121.9352&wfo=MTR&zcode=CAZ530&gset=18&gdiff=3&unit=0&tinfo=PY8&ahour=0&pcmd=11011111111110000000000000000000000000000000000000000000000&lg=en&indu=1!1!1!&dd=&bw=&hrspan=48&pqpfhr=6&psnwhr=6"
+# NWS meteograms (home and place of interest)
+home_meteogram_url = "https://forecast.weather.gov/meteograms/Plotter.php?lat=36.6285&lon=-121.9352&wfo=MTR&zcode=CAZ530&gset=18&gdiff=3&unit=0&tinfo=PY8&ahour=0&pcmd=11011111111110000000000000000000000000000000000000000000000&lg=en&indu=1!1!1!&dd=&bw=&hrspan=48&pqpfhr=6&psnwhr=6"
+poi_meteogram_url  = "https://forecast.weather.gov/meteograms/Plotter.php?lat=46.781&lon=-92.118&wfo=DLH&zcode=MNZ037&gset=15&gdiff=3&unit=0&tinfo=CY6&ahour=0&pcmd=11011111111110000000000000000000000000000000000000000000000&lg=en&indu=1!1!1!&dd=&bw=&hrspan=48&pqpfhr=6&psnwhr=6"
 
 # Local directory for downloaded images
 img_dir = config.locs.image_dir
@@ -56,14 +57,15 @@ ab_pac_6hrprecip = ( ab_pac_6hrprecip_url, img_dir+"ab_pac_6hrprecip.png" )
 ab_pac_850thetae = ( ab_pac_850thetae_url, img_dir+"ab_pac_850thetae.png" )
 ab_pac_700wnd_pw = ( ab_pac_700wnd_pw_url, img_dir+"ab_pac_700wnd_pw.png" )
 cdip_swell       = ( cdip_swell_url,       img_dir+"cdip_swell.png"       )
-nws_meteogram    = ( nws_meteogram_url,    img_dir+"nws_meteogram.png"    )
+home_meteogram   = ( home_meteogram_url,   img_dir+"home_meteogram.png"   )
+poi_meteogram    = ( poi_meteogram_url,    img_dir+"poi_meteogram.png"    )
 
 # All image data
 images = ( pw_conus_maxtemp, pw_conus_mintemp, pw_conus_24hrqpf,
            pw_conus_24hsnow, ab_con_6hrprecip, ab_con_850thetae,
            ab_con_capeshear, ab_con_mslp_jets, ab_pac_mslp_anom, 
            ab_pac_6hrprecip, ab_pac_850thetae, ab_pac_700wnd_pw,
-           cdip_swell, nws_meteogram  )
+           cdip_swell, home_meteogram, poi_meteogram  )
 
 
 def get_img( url, filename ):
@@ -95,7 +97,7 @@ def crop_bentleys( path, debug=False ):
         # Overwrite previous image
         im1.save(path)
     
-def crop_meteogram( path=nws_meteogram[1], debug=False ):
+def crop_meteogram( path=home_meteogram[1], debug=False ):
     # Opens a image in RGB mode
     im = Image.open(path)
     # Crop specs for removing unnecessary vars from plot
@@ -113,7 +115,8 @@ def get_imgs( ):
     for img in images:
         get_img( img[0], img[1] )
     # Crop images what need croppin
-    crop_meteogram()
+    crop_meteogram( home_meteogram[1] )
+    crop_meteogram( poi_meteogram[1]  )
     for img in images[4:12]:
         crop_bentleys( img[1] )
         
