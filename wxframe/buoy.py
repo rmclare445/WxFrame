@@ -6,7 +6,8 @@ Retrieve buoy data from web
 
 import requests
 import tkinter as tk
-from nws_read import remove_html
+#from nws_read import remove_html
+from tools.text_tools import *
 
 buoy46042_url = "https://www.ndbc.noaa.gov/station_page.php?station=46042&uom=M&tz=STN"
 buoy46092_url = "https://www.ndbc.noaa.gov/station_page.php?station=46092&uom=M&tz=STN"
@@ -23,7 +24,7 @@ def get_buoy_table( url ):
         # Find significant markers in webpage content, crop, then filter to list
         cut = content.find('Click on the graph icon in the table below to see a time series plot of the last five days of that observation.')
         end = content.find('Combined plot of Wind Speed, Gust, and Air Pressure')
-        content = remove_html( content[cut+111:end] ).replace(' ', '').split('\t')
+        content = remove_html( content[cut+111:end] ).replace(' ', '').replace('\n', '').split('\t')
         content = list(filter(None, content))
         
         # Separate variable names from observations
@@ -59,24 +60,11 @@ def merge_buoy_data( ):
                 obs2_column[j] = obs2[i]
                 break
     # Populate data table
-    data = [ ('NOAA NBDC Readings', 'NDBC 46042', 'MBARI 46092') ]
+    data = [ ('NOAA NBDC Readings', 'NBDC 46042', 'MBARI 46092') ]
     for i in range(len(vars_column)):
         data.append( (vars_column[i], obs1_column[i], obs2_column[i]) )
             
     return data
-
-
-def rm_parentheses( string ):
-    new = ""
-    text = True
-    for i in string:
-        if i == "(":
-            text = False
-        elif i == ")":
-            text = True
-        elif text:
-            new = new + i
-    return new
 
 
 class Table:
@@ -104,13 +92,15 @@ class Table:
         if '&deg;C' in datum:
             quant = float(datum[:-6]) * (9/5.) + 32.
             return "%0.1f\u00B0F" % quant
+        if 'm/s' in datum:
+            quant = float(datum[:-3]) * 2.23694
+            return "%01d mph (%s)" % (quant, datum)
         return datum
-                
-                
+              
+
 class BuoyTable( tk.Frame ):
     def __init__(self, parent):
         tk.Frame.__init__( self, parent )
-        
         self.tab = Table( self )
                 
 
