@@ -32,18 +32,18 @@ class Dashboard( tk.Frame ):
         self.exterior = tk.Label(self, text="52\u00B0\n31\u00B0")
         self.exterior.pack(side=tk.LEFT, fill=tk.BOTH)
         self.exterior.config(fg="white", bg="grey2", font=self.dash_font,
-                            padx=10, pady=15)
+                             padx=10, pady=15)
         # Make interior data label (dummy data for now)
         self.interior = tk.Label(self, text="68\u00B0\n51\u00B0")
         self.interior.pack(side=tk.LEFT, fill=tk.BOTH, padx=1)
         self.interior.config(fg="white", bg="grey8", font=self.dash_font,
-                            padx=10, pady=15)
+                             padx=10, pady=15)
         # Make NWS synopsis label
         self.synopsis = tk.Label(self, text=" ")
         self.synopsis.pack(side=tk.LEFT, fill=tk.BOTH)
         self.synopsis.config(fg="white", bg="grey16", 
-                            font= (self.dash_font[0], int(self.dash_font[1]/2.)),
-                            padx=10, pady=10, wraplength=1000)
+                             font= (self.dash_font[0], int(self.dash_font[1]/2.)),
+                             padx=10, pady=10, wraplength=1000)
         self.update_synopsis( parent )
         
     def update_clock( self ):
@@ -64,6 +64,6 @@ class Dashboard( tk.Frame ):
         # Get standard and marine synopses from NWS
         synops, marine = get_synopsis()
         content = marine if parent.ps[parent.current_page].name == 'Marine' else synops
-        multiplier = 0.55 * (1. - len(content)/2700.)
+        multiplier = 0.55 * (1. - min(len(content)/2700., .9))
         self.synopsis.config(text = content, font=(self.dash_font[0], int(self.dash_font[1]*multiplier)))
         self.synopsis.after(1800000, self.update_synopsis)
