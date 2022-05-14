@@ -71,24 +71,35 @@ class Page01( tk.Frame ):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
         self.name = 'Marine'
-        # Display image
-        self.xx=0.3
-        self.yy=0.4
-        self.path = cdip_swell[1]
         self.parent = parent
         
     def show( self ):
-        self.img = Image.open(self.path)
-        self.test = ImageTk.PhotoImage(self.img)
-        self.label = tk.Label(image=self.test)
-        # Position image
-        self.label.place(anchor='center', relx=self.xx, rely=self.yy)
-        
+        # Surfline SST plot, resized to ~ 2/3
+        self.img = Image.open(surfline_sst[1])
+        resized = self.img.resize((644, 397),Image.ANTIALIAS)
+        self.SST = ImageTk.PhotoImage(resized)
+        self.sst = tk.Label(image=self.SST)
+        self.sst.place(anchor='nw', relx=0., rely=0.09)
+        # Surfline WND plot, resized to ~ 2/3
+        self.img = Image.open(surfline_wnd[1])
+        resized = self.img.resize((644, 397),Image.ANTIALIAS)
+        self.WND = ImageTk.PhotoImage(resized)
+        self.wnd = tk.Label(image=self.WND)
+        self.wnd.place(anchor='nw', relx=0., rely=0.48)
+        # CDIP swell map, cropped
+        self.img = Image.open(cdip_swell[1])
+        cropped = self.img.crop((60, 105, 580, 790))
+        self.CDIP = ImageTk.PhotoImage(cropped)
+        self.cdip = tk.Label(image=self.CDIP)
+        self.cdip.place(anchor='nw', relx=0.35, rely=0.15)
+        # Buoy table
         self.parent.tab = buoy.BuoyTable(self.parent)
-        self.parent.tab.place(anchor='center', relx=0.75, rely=0.5)
+        self.parent.tab.place(anchor='center', relx=0.81, rely=0.5)
         
     def disappear( self ):
-        self.label.destroy()
+        self.cdip.destroy()
+        self.sst.destroy()
+        self.wnd.destroy()
         self.parent.tab.destroy()
 
 
