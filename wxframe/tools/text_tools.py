@@ -6,7 +6,7 @@ Functions for handling string inputs
 
 
 def rm_parentheses( string ):
-    # Remove all content within parentheses
+    ''' Remove all content within parentheses '''
     new = ""
     text = True
     for i in string:
@@ -20,7 +20,7 @@ def rm_parentheses( string ):
 
 
 def remove_html( string ):
-    # Remove all html commands enclosed by <>
+    ''' Remove all html commands enclosed by <> '''
     new = ""
     text = True
     for i in string:
@@ -31,3 +31,8 @@ def remove_html( string ):
         elif text:
             new = new + i
     return new
+
+
+def cap_first( string ):
+    ''' Capitalize the first letter of a string '''
+    return string[0].upper()+string[1:]
