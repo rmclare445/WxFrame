@@ -59,8 +59,8 @@ def get_wrh( url=noaa_url ):
     r = requests.get( url, stream = True )
     # Check if the webpage was retrieved successfully
     if r.status_code == 200:
-        #content = remove_html( r.text.replace("<br>", "\n") )
-        content = r.text
+        content = remove_html( r.text.replace("<br>", "\n") )
+        #content = r.text
         return content
 
 
@@ -69,4 +69,4 @@ def rm_text( string ):
 
 
 if __name__ == "__main__":
-    print( len(get_discussion()) )
+    print( get_wrh() )

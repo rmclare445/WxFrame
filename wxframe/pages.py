@@ -4,15 +4,19 @@ WxFrame pages defined
 
 ## Need to add update functions to pages
 
+## Should have a Sierra snow forecast page
+
+## The Pivotal and the Bentley maps both have associated forecasts
+##  on the same plots.  The QuadPlotPages could toggle through times
+##  by using +/-
+
 """
 
 import tkinter as tk
-from tkhtmlview import HTMLLabel
-# import nexrad  as nx
-# import goes
+#from tkhtmlview import HTMLLabel
 import buoy
 from get_img  import *
-from nws_read import get_wrh
+from nws_read import get_wrh, get_discussion, get_marine
 
 
 class FcstFrame( tk.Frame ):
@@ -34,40 +38,61 @@ class Page00( tk.Frame ):
         tk.Frame.__init__(self, parent)
         self.parent = parent
         self.name = 'Local Forecast'
-        # Display image
-        self.xx=0.3
-        self.yy=0.4
-        #self.path = home_meteogram[1]
         
     def show( self ):
         # Home NWS Meteogram
-        self.img = Image.open(home_meteogram[1])
-        self.homemetimg = ImageTk.PhotoImage(self.img)
-        self.homemet = tk.Label(image=self.homemetimg)
-        self.homemet.place(anchor='w', relx=0, rely=0.65)
-        # Place of interest NWS meteogram
-        self.img = Image.open(poi_meteogram[1])
-        self.poimetimg = ImageTk.PhotoImage(self.img)
-        self.poimet = tk.Label(image=self.poimetimg)
-        self.poimet.place(anchor='w', relx=0.5, rely=0.65)
+        self.longmet = tk.Frame( self.parent )
+        self.longmet.place(relx=0, rely=0.65, anchor="w")
         
-        self.fcstframe = FcstFrame( self.parent, get_wrh() )
-        self.fcstframe.place(anchor='nw', relx=0, rely=0.06)
+        self.met00 = ImageTk.PhotoImage( Image.open(home_meteogram[1]) )
+        self.homemet00 = tk.Label(self.longmet, image=self.met00)
+        self.homemet00.pack(side=tk.LEFT, fill=tk.BOTH)
+        # self.met48 = ImageTk.PhotoImage( Image.open(hm48_meteogram[1]) )
+        # self.homemet48 = tk.Label(self.longmet, image=self.met48)
+        # self.homemet48.pack(side=tk.LEFT, fill=tk.BOTH)
+        
+        # CA forecast maps
+        
+        
+        # img = Image.open(home_meteogram[1])
+        # self.homemetimg = ImageTk.PhotoImage(img)
+        # self.homemet = tk.Label(image=self.homemetimg)
+        # self.homemet.place(anchor='w', relx=0, rely=0.65)
+        
+        # self.fcstframe = FcstFrame( self.parent, get_wrh() )
+        # self.fcstframe.place(anchor='nw', relx=0, rely=0.06)
+        
+        w = get_wrh()
+        self.wrh = tk.Frame( self.parent, relief=tk.RAISED, borderwidth=2 )
+        self.wrh.place(relx=0., rely=0.06, anchor='nw')
+        self.wrhlabel = tk.Label( self.wrh, text=w[3:-4], justify=tk.LEFT )
+        self.wrhlabel.pack( )
+        self.wrhlabel.config(fg="white", bg="black", 
+                                  font=('lucida', int(self.parent.height/110.)),
+                                  padx=5, pady=2, wraplength=1000)
+        
+        
+        
+        # Make NWS discussion frame
+        d = get_discussion()
+        textdiv = len(d) / 30.
+        self.discussion = tk.Frame( self.parent, relief=tk.RAISED, borderwidth=2 )
+        self.discussion.place(relx=0.97, rely=0.06, anchor='ne')
+        self.discusslabel = tk.Label( self.discussion, text=d, justify=tk.LEFT )
+        self.discusslabel.pack( )
+        self.discusslabel.config(fg="white", bg="black", 
+                                  font=('lucida', int(self.parent.height/90.)),#textdiv)),
+                                  padx=10, pady=5, wraplength=1175)
         
     def disappear( self ):
-        self.homemet.destroy()
-        self.poimet.destroy()
-        self.fcstframe.disappear()
-        
-    # def update( self ):
-    #     # get images
-    #     # self.disappear()
-    #     # self.show()
-    #     self.after(1800000, self.update)
-    #     return
+        #self.homemet00.destroy()
+        self.longmet.destroy()
+        self.wrh.destroy()
+        self.discussion.destroy()
+        #self.fcstframe.disappear()
 
 
-class Page01( tk.Frame ):
+class MarineCAPage( tk.Frame ):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
         self.name = 'Marine'
@@ -75,96 +100,48 @@ class Page01( tk.Frame ):
         
     def show( self ):
         # Surfline SST plot, resized to ~ 2/3
-        self.img = Image.open(surfline_sst[1])
-        resized = self.img.resize((644, 397),Image.ANTIALIAS)
+        img = Image.open(surfline_sst[1])
+        resized = img.resize((644, 397),Image.ANTIALIAS)
         self.SST = ImageTk.PhotoImage(resized)
         self.sst = tk.Label(image=self.SST)
         self.sst.place(anchor='nw', relx=0., rely=0.09)
         # Surfline WND plot, resized to ~ 2/3
-        self.img = Image.open(surfline_wnd[1])
-        resized = self.img.resize((644, 397),Image.ANTIALIAS)
+        img = Image.open(surfline_wnd[1])
+        resized = img.resize((644, 397),Image.ANTIALIAS)
         self.WND = ImageTk.PhotoImage(resized)
         self.wnd = tk.Label(image=self.WND)
         self.wnd.place(anchor='nw', relx=0., rely=0.48)
         # CDIP swell map, cropped
-        self.img = Image.open(cdip_swell[1])
-        cropped = self.img.crop((60, 105, 580, 790))
+        img = Image.open(cdip_swell[1])
+        cropped = img.crop((60, 105, 580, 790))
         self.CDIP = ImageTk.PhotoImage(cropped)
         self.cdip = tk.Label(image=self.CDIP)
         self.cdip.place(anchor='nw', relx=0.35, rely=0.15)
         # Buoy table
         self.parent.tab = buoy.BuoyTable(self.parent)
-        self.parent.tab.place(anchor='center', relx=0.81, rely=0.5)
+        self.parent.tab.place(anchor='center', relx=0.81, rely=0.6)
+        # Marine synopsis
+        self.marine = tk.Frame( self.parent, relief=tk.RAISED, borderwidth=2 )
+        self.marine.place(relx=0.81, rely=0.2, anchor='center')
+        self.marinelabel = tk.Label( self.marine, text=get_marine(), justify=tk.LEFT, height=10 )
+        self.marinelabel.pack( )
+        self.marinelabel.config(fg="white", bg="midnight blue", 
+                                font=('lucida', int(self.parent.height/75.)),
+                                padx=15, pady=15, wraplength=600)
         
     def disappear( self ):
         self.cdip.destroy()
         self.sst.destroy()
         self.wnd.destroy()
         self.parent.tab.destroy()
-
-
-# class Page02( tk.Frame ):
-#     def __init__(self, parent):
-#         tk.Frame.__init__(self, parent)
-#         self.name = 'NEXRAD'
-#         self.c    = 0
+        self.marine.destroy()
         
-#     def disp( self ):
-#         self.img = Image.open(nx.nexrad_loc+nx.nexrad_lst[self.c])
-#         self.test = ImageTk.PhotoImage(self.img)
-#         self.label = tk.Label(image=self.test)
-#         self.label.place(anchor='center', relx=0.5, rely=0.45)
-        
-#     def show( self ):
-#         self.disp()
-#         self.cycle()
-        
-#     def disappear( self ):
-#         self.label.destroy()
-        
-#     def cycle( self ):
-#         if self.c == (len(nx.nexrad_lst)-1):
-#             self.c = 0
-#         else:
-#             self.c = self.c + 1
-#         self.label.destroy()
-#         self.disp()
-#         self.label.after(100, self.cycle)
-        
-
-# class Page03( tk.Frame ):
-#     def __init__(self, parent):
-#         tk.Frame.__init__(self, parent)
-#         self.parent = parent
-#         self.name = 'GOES West Coast'
-#         self.c    = 0
-        
-#     def disp( self ):
-#         self.img = Image.open(goes.goes_loc+goes.goes_lst[-self.c])
-#         self.test = ImageTk.PhotoImage(self.img)
-#         self.label = tk.Label(image=self.test)
-#         self.label.place(anchor='center', relx=0.5, rely=0.45)
-        
-#     def show( self ):
-#         self.disp()
-#         self.cycle()
-        
-#     def disappear( self ):
-#         self.label.destroy()
-        
-#     def cycle( self ):
-#         if self.c == (len(goes.goes_lst)-1):
-#             self.c = 0
-#         else:
-#             self.c = self.c + 1
-#         self.label.destroy()
-#         self.disp()
-#         self.parent.header.tkraise()
-#         self.label.after(100, self.cycle)
+    # Can probably refresh by just calling show() again
         
         
 class FullAnimPage( tk.Frame ):
-    def __init__(self, parent, page):
+    ''' Displays a single image frame and refreshes images in a cycle to animate '''
+    def __init__(self, parent, page ):
         tk.Frame.__init__(self, parent)
         self.parent = parent
         self.name = page.name
@@ -174,10 +151,10 @@ class FullAnimPage( tk.Frame ):
         self.c    = 0
     
     def disp( self ):
-        self.img = Image.open(self.loc+self.lst[self.cdir*self.c])
-        self.test = ImageTk.PhotoImage(self.img)
-        self.label = tk.Label(image=self.test)
-        self.label.place(anchor='center', relx=0.5, rely=0.45)
+        self.frame = ImageTk.PhotoImage( Image.open(self.loc+self.lst[self.cdir*self.c]) )
+        self.label = tk.Label(image=self.frame)
+        self.label.place(anchor='center', relx=0.5, rely=0.44)
+        self.parent.header.tkraise()
         
     def show( self ):
         self.disp()
@@ -187,20 +164,68 @@ class FullAnimPage( tk.Frame ):
         self.label.destroy()
         
     def cycle( self ):
-        if self.name == 'NEXRAD' and self.parent.nexrad_update == True:
-            pass
-        elif self.name == 'GOES West Coast' and self.parent.goes_update == True:
-            pass
-        else:
+        if not self.parent.paused:
             if self.c == (len(self.lst)-1):
                 self.c = 0
             else:
                 self.c = self.c + 1
             self.label.destroy()
             self.disp()
-            self.parent.header.tkraise()
-        self.label.after(100, self.cycle)
-    
-    
-    
-    
+        self.label.after(self.parent.anim_wait, self.cycle)
+
+
+class QuadPlotPage( tk.Frame ):
+    ''' Displays four images attached at the center '''
+    def __init__(self, parent, name):
+        tk.Frame.__init__(self, parent)
+        self.parent  = parent
+        self.name    = name
+        self.centery = 0.44
+        if name == "CONUS Daily":
+            self.images  = images[:4]
+            self.xscale  = 0.6
+            self.yscale  = 0.55
+        elif name == "CONUS Analysis":
+            self.images  = images[4:8]
+            self.xscale  = 0.6
+            self.yscale  = 0.59
+        elif name == "Pacific Analysis":
+            self.images  = images[8:12]
+            self.xscale  = 0.6
+            self.yscale  = 0.59
+        
+    def show( self ):
+        # Top Left Image
+        img = Image.open(self.images[0][1])
+        width, height = img.size
+        resized = img.resize((int(width*self.xscale), int(height*self.yscale)),Image.ANTIALIAS)
+        self.TLI = ImageTk.PhotoImage(resized)
+        self.tli = tk.Label(image=self.TLI)
+        self.tli.place(anchor='se', relx=0.5, rely=self.centery)
+        # Top Right Image
+        img = Image.open(self.images[1][1])
+        width, height = img.size
+        resized = img.resize((int(width*self.xscale), int(height*self.yscale)),Image.ANTIALIAS)
+        self.TRI = ImageTk.PhotoImage(resized)
+        self.tri = tk.Label(image=self.TRI)
+        self.tri.place(anchor='sw', relx=0.5, rely=self.centery)
+        # Bottom Left Image
+        img = Image.open(self.images[2][1])
+        width, height = img.size
+        resized = img.resize((int(width*self.xscale), int(height*self.yscale)),Image.ANTIALIAS)
+        self.BLI = ImageTk.PhotoImage(resized)
+        self.bli = tk.Label(image=self.BLI)
+        self.bli.place(anchor='ne', relx=0.5, rely=self.centery)
+        # Bottom Right Image
+        img = Image.open(self.images[3][1])
+        width, height = img.size
+        resized = img.resize((int(width*self.xscale), int(height*self.yscale)),Image.ANTIALIAS)
+        self.BRI = ImageTk.PhotoImage(resized)
+        self.bri = tk.Label(image=self.BRI)
+        self.bri.place(anchor='nw', relx=0.5, rely=self.centery)
+        
+    def disappear( self ):
+        self.tli.destroy()
+        self.tri.destroy()
+        self.bli.destroy()
+        self.bri.destroy()
