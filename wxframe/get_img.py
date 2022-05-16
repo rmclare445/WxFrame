@@ -17,7 +17,7 @@ from PIL import Image, ImageTk
 #####################################
 
 # Pivotal Weather daily CONUS weather forecast images
-ndfd_loc = "https://maps8.pivotalweather.com/maps/ndfd/latest/"
+ndfd_loc = "https://x-hv1.pivotalweather.com/maps/ndfd/latest/"
 pw_conus_maxtemp_url = ndfd_loc + "ndfd_sfctmax.conus.png"
 pw_conus_mintemp_url = ndfd_loc + "ndfd_sfctmin.conus.png"
 pw_conus_24hrqpf_url = ndfd_loc + "ndfd_24hqpf.conus.png"
@@ -42,6 +42,7 @@ surfline_sst_url = "https://slcharts01.cdn-surfline.com/charts/cencal/monterey/n
 surfline_wnd_url = "https://slcharts01.cdn-surfline.com/charts/cencal/monterey/nearshorewinds/monterey_large_1.png"
 # NWS meteograms (home and place of interest)
 home_meteogram_url = "https://forecast.weather.gov/meteograms/Plotter.php?lat=36.6285&lon=-121.9352&wfo=MTR&zcode=CAZ530&gset=18&gdiff=3&unit=0&tinfo=PY8&ahour=0&pcmd=11011111111110000000000000000000000000000000000000000000000&lg=en&indu=1!1!1!&dd=&bw=&hrspan=48&pqpfhr=6&psnwhr=6"
+hm48_meteogram_url = "https://forecast.weather.gov/meteograms/Plotter.php?lat=36.6175&lon=-121.9352&wfo=MTR&zcode=CAZ530&gset=18&gdiff=3&unit=0&tinfo=PY8&ahour=48&pcmd=11101111110000000000000000000000000000000000000000000000000&lg=en&indu=1!1!1!&dd=&bw=&hrspan=48&pqpfhr=6&psnwhr=6"
 poi_meteogram_url  = "https://forecast.weather.gov/meteograms/Plotter.php?lat=46.781&lon=-92.118&wfo=DLH&zcode=MNZ037&gset=15&gdiff=3&unit=0&tinfo=CY6&ahour=0&pcmd=11011111111110000000000000000000000000000000000000000000000&lg=en&indu=1!1!1!&dd=&bw=&hrspan=48&pqpfhr=6&psnwhr=6"
 
 # Local directory for downloaded images
@@ -63,6 +64,7 @@ cdip_swell       = ( cdip_swell_url,       img_dir+"cdip_swell.png"       )
 surfline_sst     = ( surfline_sst_url,     img_dir+"surfline_sst.png"     )
 surfline_wnd     = ( surfline_wnd_url,     img_dir+"surfline_wnd.png"     )
 home_meteogram   = ( home_meteogram_url,   img_dir+"home_meteogram.png"   )
+hm48_meteogram   = ( hm48_meteogram_url,   img_dir+"hm48_meteogram.png"   )
 poi_meteogram    = ( poi_meteogram_url,    img_dir+"poi_meteogram.png"    )
 
 # All image data
@@ -71,9 +73,7 @@ images = ( pw_conus_maxtemp, pw_conus_mintemp, pw_conus_24hrqpf,
            ab_con_capeshear, ab_con_mslp_jets, ab_pac_mslp_anom, 
            ab_pac_6hrprecip, ab_pac_850thetae, ab_pac_700wnd_pw,
            cdip_swell, surfline_sst, surfline_wnd, home_meteogram, 
-           poi_meteogram  )
-
-images = ( cdip_swell, surfline_sst, surfline_wnd )
+           hm48_meteogram, poi_meteogram  )
 
 
 def get_img( url, filename ):
@@ -118,36 +118,16 @@ def crop_meteogram( path=home_meteogram[1], debug=False ):
         # Overwrite previous image
         im1.save(path)
         
-# def crop_cdip( path=cdip_swell[1], debug=False ):
-#     im = Image.open(path)
-#     im1 = im.crop((60, 105, 580, 790))
-#     if debug:
-#         im1.show()
-#     else:
-#         im1.save(path)
-        
 def get_imgs( ):
     # Retrieves all listed images
     for img in images:
         get_img( img[0], img[1] )
     # Crop images what need croppin
     crop_meteogram( home_meteogram[1] )
-    crop_meteogram( poi_meteogram[1]  )
+    crop_meteogram( hm48_meteogram[1] )
     #crop_cdip()
     for img in images[4:12]:
         crop_bentleys( img[1] )
-        
-# def show_img( path, xx=0, yy=0 ):
-#     # Create a photoimage object of the image in the path
-#     image = Image.open(path)
-#     test = ImageTk.PhotoImage(image)
-    
-#     label = tk.Label(image=test)
-#     label.image = test
-    
-#     # Position image
-#     label.place(anchor='center', relx=xx, rely=yy)
-#     #label.pack()
 
 
 if __name__ == "__main__":
