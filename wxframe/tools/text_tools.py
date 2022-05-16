@@ -34,4 +34,5 @@ def remove_html( string ):
 
 
 def cap_first( string ):
+    ''' Capitalize the first letter of a string '''
     return string[0].upper()+string[1:]
