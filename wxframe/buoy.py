@@ -2,11 +2,14 @@
 
 Retrieve buoy data from web
 
+&
+
+Provide table configuration for buoy data
+
 """
 
 import requests
 import tkinter as tk
-#from nws_read import remove_html
 from tools.text_tools import *
 
 buoy46042_url = "https://www.ndbc.noaa.gov/station_page.php?station=46042&uom=M&tz=STN"
@@ -36,10 +39,13 @@ def get_buoy_table( url ):
 
 
 def merge_buoy_data( ):
-    # 
+    '''
+    Creates tabular list for buoy vars and data
+    '''
+    # Retrieve current provided data for both buoys
     vars1, obs1 = get_buoy_table( buoy46042_url )
     vars2, obs2 = get_buoy_table( buoy46092_url )
-    # 
+    # Create column for variables, even if referenced only once
     vars_column = vars1
     for var in vars2:
         if var in vars1:
