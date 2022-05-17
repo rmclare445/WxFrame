@@ -1,4 +1,5 @@
 wxframe/__pycache__
+wxframe/tools/__pycache__
 wxframe/config/*
 wxframe/geckodriver*
 img

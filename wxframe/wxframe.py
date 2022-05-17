@@ -33,6 +33,8 @@ Page 2,3,.. - What's going on around the country/world
 ##  Much better long-term stability as websites change
 ##  This is an undertaking which will take much time and be done gradually
 
+## Remove dashboard (except clock) for QuadPlotPages, use more room for plots.
+
 """
 
 #import threading
@@ -67,8 +69,8 @@ class WxFrame( tk.Tk ):
         self.bind( "<*>", lambda x: self.pause() )
         self.paused = False
         # Animation speed controls
-        self.bind( "-", lambda x: self.slower() )
-        self.bind( "+", lambda x: self.faster() )
+        self.bind( "-", lambda x: self.minus() )
+        self.bind( "+", lambda x: self.plus()  )
         self.anim_wait = 100
         
         # Get screen resources
@@ -145,13 +147,25 @@ class WxFrame( tk.Tk ):
         if type(self.ps[self.current_page]).__name__ == "FullAnimPage":
             self.paused = not self.paused
             
-    def faster( self ):
-        ''' Decrease wait time between frames '''
-        self.anim_wait = max(10, self.anim_wait-30)
+    def plus( self ):
+        ''' Animation control '''
+        if self.paused and type(self.ps[self.current_page]).__name__ == "FullAnimPage":
+            # Single frame advance when paused
+            self.ps[self.current_page].advance( 1 )
+            self.ps[self.current_page].cycle()
+        else:
+            # Decrease wait time between frames
+            self.anim_wait = max(10, self.anim_wait-30)
         
-    def slower( self ):
-        ''' Increase wait time between frames '''
-        self.anim_wait = min(500, self.anim_wait+30)
+    def minus( self ):
+        ''' Animation control '''
+        if self.paused and type(self.ps[self.current_page]).__name__ == "FullAnimPage":
+            # Single frame retreat when paused
+            self.ps[self.current_page].advance( -1 )
+            self.ps[self.current_page].cycle()
+        else:
+            # Increase wait time between frames
+            self.anim_wait = min(500, self.anim_wait+30)
         
     # def turn_page( self ):
     #     #

@@ -163,14 +163,20 @@ class FullAnimPage( tk.Frame ):
     def disappear( self ):
         self.label.destroy()
         
+    def advance( self, direction ):
+        # Advances forward or backward one frame depending on direction (-1, 1)
+        if direction == 1 and self.c == (len(self.lst)-1):
+            self.c = 0
+        elif direction == -1 and self.c == 0:
+            self.c = (len(self.lst)-1)
+        else:
+            self.c = self.c + 1 * direction
+        self.label.destroy()
+        self.disp()
+        
     def cycle( self ):
         if not self.parent.paused:
-            if self.c == (len(self.lst)-1):
-                self.c = 0
-            else:
-                self.c = self.c + 1
-            self.label.destroy()
-            self.disp()
+            self.advance( 1 )
         self.label.after(self.parent.anim_wait, self.cycle)
 
 
