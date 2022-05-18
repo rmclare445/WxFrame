@@ -22,3 +22,4 @@
 ![marine](img/figures/marine.png)
 ![nexrad](img/figures/radar.png)
 ![goes](img/figures/satellite.png)
+![conus](img/figures/conus.png)
