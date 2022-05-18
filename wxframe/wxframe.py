@@ -33,8 +33,6 @@ Page 2,3,.. - What's going on around the country/world
 ##  Much better long-term stability as websites change
 ##  This is an undertaking which will take much time and be done gradually
 
-## Remove dashboard (except clock) for QuadPlotPages, use more room for plots.
-
 """
 
 #import threading
