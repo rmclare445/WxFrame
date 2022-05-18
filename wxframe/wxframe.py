@@ -88,14 +88,13 @@ class WxFrame( tk.Tk ):
         print("Updated images retrieved")
         
         # Initialize pages, show homepage
-        self.p00 = pg.Page00(self)
-        self.p01 = pg.MarineCAPage(self)
-        self.p02 = pg.FullAnimPage(self, nexrad)
-        self.p03 = pg.FullAnimPage(self, goes)
-        self.p04 = pg.QuadPlotPage(self, "CONUS Daily")
-        self.p05 = pg.QuadPlotPage(self, "CONUS Analysis")
-        self.p06 = pg.QuadPlotPage(self, "Pacific Analysis")
-        self.ps  = [self.p00, self.p01, self.p02, self.p03, self.p04, self.p05, self.p06]
+        self.ps  = [ pg.Page00(self),
+                     pg.MarineCAPage(self),
+                     pg.FullAnimPage(self, nexrad),
+                     pg.FullAnimPage(self, goes),
+                     pg.QuadPlotPage(self, "CONUS Daily"),
+                     pg.QuadPlotPage(self, "CONUS Analysis"),
+                     pg.QuadPlotPage(self, "Pacific Analysis") ]
         self.ps[0].show()
         
         # Display dashboard
