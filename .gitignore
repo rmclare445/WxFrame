@@ -1,5 +1,7 @@
 wxframe/__pycache__
-wxframe/config/*
+wxframe/tools/__pycache__
+wxframe/config
 wxframe/geckodriver*
+upd/*.xml
 img
 example_*

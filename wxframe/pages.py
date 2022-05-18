@@ -6,6 +6,8 @@ WxFrame pages defined
 
 ## Should have a Sierra snow forecast page
 
+## Maybe add a California fire monitoring page?
+
 ## The Pivotal and the Bentley maps both have associated forecasts
 ##  on the same plots.  The QuadPlotPages could toggle through times
 ##  by using +/-
@@ -42,10 +44,13 @@ class Page00( tk.Frame ):
     def show( self ):
         # Home NWS Meteogram
         self.longmet = tk.Frame( self.parent )
-        self.longmet.place(relx=0, rely=0.65, anchor="w")
+        self.longmet.place(relx=0, rely=0.88, anchor="sw")
         
-        self.met00 = ImageTk.PhotoImage( Image.open(home_meteogram[1]) )
-        self.homemet00 = tk.Label(self.longmet, image=self.met00)
+        #self.met00 = ImageTk.PhotoImage( Image.open(home_meteogram[1]) )
+        img = Image.open(img_dir+"test_plot.png")
+        resized = img.crop((270, 35, 2200, 485))
+        self.met00 = ImageTk.PhotoImage( resized )
+        self.homemet00 = tk.Label(self.longmet, image=self.met00, borderwidth=0)
         self.homemet00.pack(side=tk.LEFT, fill=tk.BOTH)
         # self.met48 = ImageTk.PhotoImage( Image.open(hm48_meteogram[1]) )
         # self.homemet48 = tk.Label(self.longmet, image=self.met48)
@@ -65,24 +70,25 @@ class Page00( tk.Frame ):
         w = get_wrh()
         self.wrh = tk.Frame( self.parent, relief=tk.RAISED, borderwidth=2 )
         self.wrh.place(relx=0., rely=0.06, anchor='nw')
-        self.wrhlabel = tk.Label( self.wrh, text=w[3:-4], justify=tk.LEFT )
+        self.wrhlabel = tk.Label( self.wrh, text=w, justify=tk.LEFT )
         self.wrhlabel.pack( )
         self.wrhlabel.config(fg="white", bg="black", 
-                                  font=('lucida', int(self.parent.height/110.)),
-                                  padx=5, pady=2, wraplength=1000)
+                                  font=('courier new', int(self.parent.height/110.), 'bold'),
+                                  padx=5, pady=2, wraplength=600)
         
         
         
         # Make NWS discussion frame
         d = get_discussion()
-        textdiv = len(d) / 30.
+        print( len(d) )
+        textdiv = 90. if len(d) < 2300 else 100.
         self.discussion = tk.Frame( self.parent, relief=tk.RAISED, borderwidth=2 )
-        self.discussion.place(relx=0.97, rely=0.06, anchor='ne')
+        self.discussion.place(relx=0.99, rely=0.06, anchor='ne')
         self.discusslabel = tk.Label( self.discussion, text=d, justify=tk.LEFT )
         self.discusslabel.pack( )
         self.discusslabel.config(fg="white", bg="black", 
-                                  font=('lucida', int(self.parent.height/90.)),#textdiv)),
-                                  padx=10, pady=5, wraplength=1175)
+                                  font=('lucida', int(self.parent.height/textdiv)),#90.)),
+                                  padx=10, pady=5, wraplength=1250)
         
     def disappear( self ):
         #self.homemet00.destroy()
@@ -163,14 +169,20 @@ class FullAnimPage( tk.Frame ):
     def disappear( self ):
         self.label.destroy()
         
+    def advance( self, direction ):
+        # Advances forward or backward one frame depending on direction (-1, 1)
+        if direction == 1 and self.c == (len(self.lst)-1):
+            self.c = 0
+        elif direction == -1 and self.c == 0:
+            self.c = (len(self.lst)-1)
+        else:
+            self.c = self.c + 1 * direction
+        self.label.destroy()
+        self.disp()
+        
     def cycle( self ):
         if not self.parent.paused:
-            if self.c == (len(self.lst)-1):
-                self.c = 0
-            else:
-                self.c = self.c + 1
-            self.label.destroy()
-            self.disp()
+            self.advance( 1 )
         self.label.after(self.parent.anim_wait, self.cycle)
 
 
@@ -180,52 +192,55 @@ class QuadPlotPage( tk.Frame ):
         tk.Frame.__init__(self, parent)
         self.parent  = parent
         self.name    = name
-        self.centery = 0.44
+        self.centerx = 0.59
+        self.centery = 0.5
         if name == "CONUS Daily":
             self.images  = images[:4]
-            self.xscale  = 0.6
-            self.yscale  = 0.55
+            self.xscale  = 0.68
+            self.yscale  = 0.63
         elif name == "CONUS Analysis":
             self.images  = images[4:8]
-            self.xscale  = 0.6
-            self.yscale  = 0.59
+            self.xscale  = 0.75
+            self.yscale  = 0.68
         elif name == "Pacific Analysis":
             self.images  = images[8:12]
-            self.xscale  = 0.6
-            self.yscale  = 0.59
+            self.xscale  = 0.75
+            self.yscale  = 0.68
         
     def show( self ):
+        self.parent.dash.trim()
         # Top Left Image
         img = Image.open(self.images[0][1])
         width, height = img.size
         resized = img.resize((int(width*self.xscale), int(height*self.yscale)),Image.ANTIALIAS)
         self.TLI = ImageTk.PhotoImage(resized)
         self.tli = tk.Label(image=self.TLI)
-        self.tli.place(anchor='se', relx=0.5, rely=self.centery)
+        self.tli.place(anchor='se', relx=self.centerx, rely=self.centery)
         # Top Right Image
         img = Image.open(self.images[1][1])
         width, height = img.size
         resized = img.resize((int(width*self.xscale), int(height*self.yscale)),Image.ANTIALIAS)
         self.TRI = ImageTk.PhotoImage(resized)
         self.tri = tk.Label(image=self.TRI)
-        self.tri.place(anchor='sw', relx=0.5, rely=self.centery)
+        self.tri.place(anchor='sw', relx=self.centerx, rely=self.centery)
         # Bottom Left Image
         img = Image.open(self.images[2][1])
         width, height = img.size
         resized = img.resize((int(width*self.xscale), int(height*self.yscale)),Image.ANTIALIAS)
         self.BLI = ImageTk.PhotoImage(resized)
         self.bli = tk.Label(image=self.BLI)
-        self.bli.place(anchor='ne', relx=0.5, rely=self.centery)
+        self.bli.place(anchor='ne', relx=self.centerx, rely=self.centery)
         # Bottom Right Image
         img = Image.open(self.images[3][1])
         width, height = img.size
         resized = img.resize((int(width*self.xscale), int(height*self.yscale)),Image.ANTIALIAS)
         self.BRI = ImageTk.PhotoImage(resized)
         self.bri = tk.Label(image=self.BRI)
-        self.bri.place(anchor='nw', relx=0.5, rely=self.centery)
+        self.bri.place(anchor='nw', relx=self.centerx, rely=self.centery)
         
     def disappear( self ):
         self.tli.destroy()
         self.tri.destroy()
         self.bli.destroy()
         self.bri.destroy()
+        self.parent.dash.show()

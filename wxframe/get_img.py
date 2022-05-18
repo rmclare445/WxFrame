@@ -6,7 +6,6 @@ Retrieve images from the web
 
 import shutil
 import requests
-#import tkinter as tk
 import config.locs
 from PIL import Image, ImageTk
 
@@ -132,6 +131,4 @@ def get_imgs( ):
 
 if __name__ == "__main__":
     #get_img( pw_conus_maxtemp[0], img_dir+"test.png" )
-    #crop_meteogram( debug=False )
-    #get_gif()
-    crop_cdip( debug=True )
+    pass

@@ -67,8 +67,8 @@ class WxFrame( tk.Tk ):
         self.bind( "<*>", lambda x: self.pause() )
         self.paused = False
         # Animation speed controls
-        self.bind( "-", lambda x: self.slower() )
-        self.bind( "+", lambda x: self.faster() )
+        self.bind( "-", lambda x: self.minus() )
+        self.bind( "+", lambda x: self.plus()  )
         self.anim_wait = 100
         
         # Get screen resources
@@ -88,14 +88,13 @@ class WxFrame( tk.Tk ):
         print("Updated images retrieved")
         
         # Initialize pages, show homepage
-        self.p00 = pg.Page00(self)
-        self.p01 = pg.MarineCAPage(self)
-        self.p02 = pg.FullAnimPage(self, nexrad)
-        self.p03 = pg.FullAnimPage(self, goes)
-        self.p04 = pg.QuadPlotPage(self, "CONUS Daily")
-        self.p05 = pg.QuadPlotPage(self, "CONUS Analysis")
-        self.p06 = pg.QuadPlotPage(self, "Pacific Analysis")
-        self.ps  = [self.p00, self.p01, self.p02, self.p03, self.p04, self.p05, self.p06]
+        self.ps  = [ pg.Page00(self),
+                     pg.MarineCAPage(self),
+                     pg.FullAnimPage(self, nexrad),
+                     pg.FullAnimPage(self, goes),
+                     pg.QuadPlotPage(self, "CONUS Daily"),
+                     pg.QuadPlotPage(self, "CONUS Analysis"),
+                     pg.QuadPlotPage(self, "Pacific Analysis") ]
         self.ps[0].show()
         
         # Display dashboard
@@ -145,13 +144,25 @@ class WxFrame( tk.Tk ):
         if type(self.ps[self.current_page]).__name__ == "FullAnimPage":
             self.paused = not self.paused
             
-    def faster( self ):
-        ''' Decrease wait time between frames '''
-        self.anim_wait = max(10, self.anim_wait-30)
+    def plus( self ):
+        ''' Animation control '''
+        if self.paused and type(self.ps[self.current_page]).__name__ == "FullAnimPage":
+            # Single frame advance when paused
+            self.ps[self.current_page].advance( 1 )
+            self.ps[self.current_page].cycle()
+        else:
+            # Decrease wait time between frames
+            self.anim_wait = max(10, self.anim_wait-30)
         
-    def slower( self ):
-        ''' Increase wait time between frames '''
-        self.anim_wait = min(500, self.anim_wait+30)
+    def minus( self ):
+        ''' Animation control '''
+        if self.paused and type(self.ps[self.current_page]).__name__ == "FullAnimPage":
+            # Single frame retreat when paused
+            self.ps[self.current_page].advance( -1 )
+            self.ps[self.current_page].cycle()
+        else:
+            # Increase wait time between frames
+            self.anim_wait = min(500, self.anim_wait+30)
         
     # def turn_page( self ):
     #     #

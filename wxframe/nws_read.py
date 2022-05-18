@@ -60,8 +60,12 @@ def get_wrh( url=noaa_url ):
     # Check if the webpage was retrieved successfully
     if r.status_code == 200:
         content = remove_html( r.text.replace("<br>", "\n") )
-        #content = r.text
-        return content
+        header = content[19:content.find(" .")]
+        middle = content[content.find("\n ."):content.find('&&')-5]
+        middle = middle.replace("\n .", "walrus")
+        middle = middle.replace("\n", " ")
+        middle = middle.replace("walrus", "\n\n ")
+        return header + middle
 
 
 def rm_text( string ):
