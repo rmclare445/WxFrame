@@ -23,11 +23,14 @@ class Dashboard( tk.Frame ):
         self.clock.config(fg="white", bg="navy", font=self.dash_font,
                           padx=20, pady=15)
         self.update_clock( )
+        self.full = False
         
         self.show()
         
     def show( self ):
-        self.full = True
+        # Guard against duplication
+        if self.full:
+            return
         # Make sunrise/set label
         self.riseset = tk.Label(self, text="")
         self.riseset.pack(side=tk.LEFT, fill=tk.BOTH, padx=1)
@@ -53,6 +56,8 @@ class Dashboard( tk.Frame ):
                              font= (self.dash_font[0], int(self.dash_font[1]/2.)),
                              padx=10, pady=10, wraplength=1000)
         self.update_synopsis( self.parent )
+        
+        self.full = True
         
     def trim( self ):
         if self.full:
