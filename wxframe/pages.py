@@ -6,6 +6,8 @@ WxFrame pages defined
 
 ## Should have a Sierra snow forecast page
 
+## Maybe add a California fire monitoring page?
+
 ## The Pivotal and the Bentley maps both have associated forecasts
 ##  on the same plots.  The QuadPlotPages could toggle through times
 ##  by using +/-
@@ -42,10 +44,13 @@ class Page00( tk.Frame ):
     def show( self ):
         # Home NWS Meteogram
         self.longmet = tk.Frame( self.parent )
-        self.longmet.place(relx=0, rely=0.65, anchor="w")
+        self.longmet.place(relx=0, rely=0.88, anchor="sw")
         
-        self.met00 = ImageTk.PhotoImage( Image.open(home_meteogram[1]) )
-        self.homemet00 = tk.Label(self.longmet, image=self.met00)
+        #self.met00 = ImageTk.PhotoImage( Image.open(home_meteogram[1]) )
+        img = Image.open(img_dir+"test_plot.png")
+        resized = img.crop((270, 35, 2200, 485))
+        self.met00 = ImageTk.PhotoImage( resized )
+        self.homemet00 = tk.Label(self.longmet, image=self.met00, borderwidth=0)
         self.homemet00.pack(side=tk.LEFT, fill=tk.BOTH)
         # self.met48 = ImageTk.PhotoImage( Image.open(hm48_meteogram[1]) )
         # self.homemet48 = tk.Label(self.longmet, image=self.met48)
@@ -75,14 +80,15 @@ class Page00( tk.Frame ):
         
         # Make NWS discussion frame
         d = get_discussion()
-        textdiv = len(d) / 30.
+        print( len(d) )
+        textdiv = 90. if len(d) < 2300 else 100.
         self.discussion = tk.Frame( self.parent, relief=tk.RAISED, borderwidth=2 )
-        self.discussion.place(relx=0.97, rely=0.06, anchor='ne')
+        self.discussion.place(relx=0.99, rely=0.06, anchor='ne')
         self.discusslabel = tk.Label( self.discussion, text=d, justify=tk.LEFT )
         self.discusslabel.pack( )
         self.discusslabel.config(fg="white", bg="black", 
-                                  font=('lucida', int(self.parent.height/90.)),#textdiv)),
-                                  padx=10, pady=5, wraplength=1175)
+                                  font=('lucida', int(self.parent.height/textdiv)),#90.)),
+                                  padx=10, pady=5, wraplength=1250)
         
     def disappear( self ):
         #self.homemet00.destroy()
