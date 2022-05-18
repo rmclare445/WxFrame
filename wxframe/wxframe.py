@@ -7,11 +7,11 @@ Page 2,3,.. - What's going on around the country/world
 
 ## should add tides to dashboard (or tide table to marine page)
 
-## combine goes.py and nexrad.py into one module
+## combine goes.py and nexrad.py into one module?
 
 ## integrate with thermostat and ESP-2866 weather station
 
-## update cycles every minute but with specific time conditionals
+## update cycles every minute but with specific time conditionals?
 
 ## updates should be managed by a separate block of function(s) in a new file which ingest the WxFrame as a parent
 
@@ -22,8 +22,6 @@ Page 2,3,.. - What's going on around the country/world
 ## add a print screen funciton bound to some key on the number pad
 
 ## add a force refresh button?
-
-## should synopsis move from dash to page?
 
 ## def halfhour_update( parent ):
 ##    parent.thing.update()

@@ -80,7 +80,6 @@ class Page00( tk.Frame ):
         
         # Make NWS discussion frame
         d = get_discussion()
-        print( len(d) )
         textdiv = 90. if len(d) < 2300 else 100.
         self.discussion = tk.Frame( self.parent, relief=tk.RAISED, borderwidth=2 )
         self.discussion.place(relx=0.99, rely=0.06, anchor='ne')

@@ -31,7 +31,7 @@ def get_marine( url=nws_url ):
         content = r.text
         # Trim text down to marine synopsis only
         marine   = content[ content.find(".MARINE.")+10 : content.find(".MTR WATCHES/WARNINGS/ADVISORIES.")-6 ]
-        return cap_first( rm_text( remove_html( marine ) ) )
+        return cap_first( rm_text( remove_html( marine ) ) ).replace("...", "...\n\n")
 
 
 def get_discussion( url=nws_url ):
