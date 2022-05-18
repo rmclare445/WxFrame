@@ -42,12 +42,12 @@ def fix_data( data ):
     # Parse integer values from NaNs
     for i, value in enumerate(data):
         data[i] = int(value) if value else float('nan')
-    return data#[:108]
+    return data
 
 
 def plot_meteogram( data_dict ):
     
-    times = data_dict['time']#[:108]
+    times = data_dict['time']
     time = []
     for t in times:
         hr = int(t[11:13])
