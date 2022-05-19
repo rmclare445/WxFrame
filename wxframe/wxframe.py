@@ -5,26 +5,42 @@ Weather Frame driver script
 Page 1 - Dashboard, pertinent locaL information
 Page 2,3,.. - What's going on around the country/world
 
-## should add tides to dashboard
+## should add tides to dashboard (or tide table to marine page)
 
-## should make dashboard configuration a function
-
-## add current conditions to dash (outdoor/indoor temp, hum)
+## combine goes.py and nexrad.py into one module
 
 ## integrate with thermostat and ESP-2866 weather station
 
 ## update cycles every minute but with specific time conditionals
 
-## when page is on "Pacific," switch synopsis to .MARINE. section of page
+## updates should be managed by a separate block of function(s) in a new file which ingest the WxFrame as a parent
+
+## Potentially, updates could be handled by wget scripts?  It would be easy to command a backgorund process on linux
+
+## make a function that slowly cycles randomly thru pages
+
+## add a print screen funciton bound to some key on the number pad
+
+## add a force refresh button?
+
+## should synopsis move from dash to page?
+
+## def halfhour_update( parent ):
+##    parent.thing.update()
+
+## Honestly, should do much of the data analysis and plot rendering locally.
+##  Make better plots with local times and my preferences
+##  Much better long-term stability as websites change
+##  This is an undertaking which will take much time and be done gradually
 
 """
 
+#import threading
 import tkinter as tk
-#from tkinter  import ttk
-from get_img  import *
-from riseset  import get_riseset
-from nws_read import get_synopsis
-from time     import strftime
+import pages   as pg
+import goes, nexrad
+from dashboard import Dashboard
+from get_img   import get_imgs
 
 
 class WxFrame( tk.Tk ):
@@ -38,118 +54,141 @@ class WxFrame( tk.Tk ):
         self.globfont = 'lucida'
         # Clarify initialization period
         self.init = True
+        self.current_page = 0
+        
         # Exit on Esc
         self.bind( "<Escape>", lambda x: self.destroy() )
         # Turn page on Enter ## will be amended to GPIO input on Pi
-        self.bind( "<Return>", lambda x: self.turn_page() )
+        #self.bind( "<Return>", lambda x: self.turn_page() )
+        # Bind all the number keys to toggle pages by number
+        for i in range(10):
+           self.bind(str(i), self.toggle_page)
+        # Bind asterisk to pause animations
+        self.bind( "<*>", lambda x: self.pause() )
+        self.paused = False
+        # Animation speed controls
+        self.bind( "-", lambda x: self.minus() )
+        self.bind( "+", lambda x: self.plus()  )
+        self.anim_wait = 100
         
         # Get screen resources
         self.width  = self.winfo_screenwidth()
         self.height = self.winfo_screenheight()
         
+        #
+        self.goes_update = False
+        self.nexrad_update = False
+        
         # Get new images
         print("Getting updated images")
         #get_imgs()
+        #nexrad.get_nexrad(self)
+        #goes.get_goes(self)
+        #self.update_15min()
         print("Updated images retrieved")
         
-        # Establish pages
-        self.pages = ['Local', 'CONUS', 'Pacific', 'Global', 'Forecast']
+        # Initialize pages, show homepage
+        self.ps  = [ pg.Page00(self),
+                     pg.MarineCAPage(self),
+                     pg.FullAnimPage(self, nexrad),
+                     pg.FullAnimPage(self, goes),
+                     pg.QuadPlotPage(self, "CONUS Daily"),
+                     pg.QuadPlotPage(self, "CONUS Analysis"),
+                     pg.QuadPlotPage(self, "Pacific Analysis") ]
+        self.ps[0].show()
+        
+        # Display dashboard
+        self.dash = Dashboard(self)
         
         # Make header with page name
         self.header = tk.Frame( self, relief=tk.RAISED, borderwidth=4 )
         self.header.place(relx=0, rely=0, anchor="nw")
-        self.headtext = tk.Label( self.header, text="Local" )
+        self.headtext = tk.Label( self.header, text="" )
         self.headtext.pack( )
         self.headtext.config(fg="white", bg="black", 
                              font=(self.globfont, int(self.height/36.), 'italic'),
                              padx=10, pady=5)
-        self.current_page = 0
-        
-        #                             #
-        #   Dashboard configuration   #
-        #  _________________________  #
-        self.dash = tk.Frame( self, relief=tk.RAISED, borderwidth=4 )
-        self.dash.place(relx=0, rely=1, anchor="sw")
-        self.dash_font = (self.globfont, int(self.height/36.), 'bold')
-        # Make clock
-        self.clock = tk.Label(self.dash, text="")
-        self.clock.pack(side=tk.LEFT, fill=tk.BOTH)
-        self.clock.config(fg="white", bg="navy", font=self.dash_font,
-                          padx=20, pady=15)
-        # Make sunrise/set label
-        self.riseset = tk.Label(self.dash, text="")
-        self.riseset.pack(side=tk.LEFT, fill=tk.BOTH, padx=1)
-        self.riseset.config(fg="white", bg="red", font=self.dash_font,
-                            padx=20, pady=15)
-        # Make exterior data label
-        self.exterior = tk.Label(self.dash, text="52\u00B0\n31\u00B0")
-        self.exterior.pack(side=tk.LEFT, fill=tk.BOTH)
-        self.exterior.config(fg="white", bg="grey2", font=self.dash_font,
-                            padx=20, pady=15)
-        # Make interior data label
-        self.interior = tk.Label(self.dash, text="68\u00B0\n51\u00B0")
-        self.interior.pack(side=tk.LEFT, fill=tk.BOTH, padx=1)
-        self.interior.config(fg="white", bg="grey8", font=self.dash_font,
-                            padx=20, pady=15)
-        # Make NWS synopsis label
-        self.synopsis = tk.Label(self.dash, text=" ")
-        self.synopsis.pack(side=tk.LEFT, fill=tk.BOTH)
-        self.synopsis.config(fg="white", bg="grey16", 
-                            font= (self.dash_font[0], int(self.dash_font[1]/2.)),
-                            padx=20, pady=10, wraplength=1000)
-        
-        # #                             #
-        # #     Body configuration      # ## might be a huge mistake
-        # #  _________________________  #
-        # self.body = tk.Frame( self )
-        # self.body.place(relx=0.5, rely=0.4, anchor="center")
-        # #
-        # self.pic = tk.Label( self.body, image=pw_conus_maxtemp[1])
-        # self.pic.place()
-        
-        # Display image
-        show_img( nws_meteogram[1], .3, .4 )
-        
-        # Initialize update cycles
-        self.update_clock()
-        self.update_riseset()
-        self.update_synopsis()
+        self.headtext.config(text = self.ps[0].name)
         
         # Initialization period over
         self.init = False
+
+    def toggle_page( self, n ):
+        ''' Select page from numerical input (n) '''
+        # Don't do anything if number input out of bounds
+        if int(n.char) >= len(self.ps):
+            return
+        self.ps[self.current_page].disappear()
+        self.paused = False
+        self.anim_wait = 100
+        self.current_page = int(n.char)
+        #self.dash.update_synopsis( self )
+        self.headtext.config(text = self.ps[self.current_page].name)
+        self.ps[self.current_page].show()
+        #self.dash.tkraise()
         
-    def update_clock( self ):
-        string = strftime("%a, %d %b %Y\n%H:%M:%S")
-        self.clock.config(text = string)
-        self.clock.after(1000, self.update_clock)
+    def status_dialogue( self, string ):
+        self.status = tk.Frame( self )
+        self.status.place(relx=1, rely=0, anchor='ne')
+        self.statuslabel = tk.Label( self.status, text=string )
+        self.statuslabel.pack()
+        self.statuslabel.config(fg="red", bg="black", 
+                              font=('calibri light', int(self.height/36.), 'italic'),
+                              padx=10, pady=5)
         
-    def update_riseset( self ):
-        # Only retrieve data on initializaiton or if it's midnight
-        if self.init or strftime("%H") == "00":
-            self.sr, self.ss = get_riseset()
-            string = "%s \u25b2\n%s \u25bc" % (self.sr, self.ss)
-            self.riseset.config(text = string)
-        # Update every 30 minutes
-        self.riseset.after(1800000, self.update_riseset)
+    def rm_status_dialogue( self ):
+        self.status.destroy()
         
-    def update_synopsis( self ):
-        synops, marine = get_synopsis()
-        if self.pages[self.current_page] == 'Pacific':
-            self.synopsis.config(text = marine, font=(self.dash_font[0], int(5*self.dash_font[1]/12.)))
+    def pause( self ):
+        ''' Pause animations '''
+        if type(self.ps[self.current_page]).__name__ == "FullAnimPage":
+            self.paused = not self.paused
+            
+    def plus( self ):
+        ''' Animation control '''
+        if self.paused and type(self.ps[self.current_page]).__name__ == "FullAnimPage":
+            # Single frame advance when paused
+            self.ps[self.current_page].advance( 1 )
+            self.ps[self.current_page].cycle()
         else:
-            self.synopsis.config(text = synops, font=(self.dash_font[0], int(self.dash_font[1]/2.)))
-        self.synopsis.after(1800000, self.update_synopsis)
+            # Decrease wait time between frames
+            self.anim_wait = max(10, self.anim_wait-30)
         
-    def turn_page( self ):
-        #
-        if self.current_page < 4:
-            self.current_page+=1
+    def minus( self ):
+        ''' Animation control '''
+        if self.paused and type(self.ps[self.current_page]).__name__ == "FullAnimPage":
+            # Single frame retreat when paused
+            self.ps[self.current_page].advance( -1 )
+            self.ps[self.current_page].cycle()
         else:
-            self.current_page = 0
-        self.headtext.config(text = self.pages[self.current_page])
-        self.update_synopsis()
+            # Increase wait time between frames
+            self.anim_wait = min(500, self.anim_wait+30)
+        
+    # def turn_page( self ):
+    #     #
+    #     self.ps[self.current_page].disappear()
+    #     if self.current_page < 2:
+    #         self.current_page+=1
+    #     else:
+    #         self.current_page = 0
+    #     self.headtext.config(text = self.ps[self.current_page].name)
+    #     # self.dash.update_synopsis( self )
+    #     #self.current_page = abs( self.current_page - 1 )
+    #     self.ps[self.current_page].show()
+        
+    # def update_15min( self ):
+    #     threading.Thread(target=self.thread_test).start()
+    #     #self.after(900000, self.update_15min)
+    #     self.after(60000, self.update_15min)
+        
+    # def thread_test( self ):
+    #     # self.status_dialogue( 'UPDATING...' )
+    #     nexrad.get_nexrad( self )
+    #     #goes.get_goes( self )
+    #     # self.rm_status_dialogue()
 
 
 if __name__ == "__main__":
     app = WxFrame()
     app.mainloop()
+    ## GPIO cleanup for RPi
