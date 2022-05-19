@@ -7,11 +7,11 @@ Page 2,3,.. - What's going on around the country/world
 
 ## should add tides to dashboard (or tide table to marine page)
 
-## combine goes.py and nexrad.py into one module
+## combine goes.py and nexrad.py into one module?
 
 ## integrate with thermostat and ESP-2866 weather station
 
-## update cycles every minute but with specific time conditionals
+## update cycles every minute but with specific time conditionals?
 
 ## updates should be managed by a separate block of function(s) in a new file which ingest the WxFrame as a parent
 
@@ -22,8 +22,6 @@ Page 2,3,.. - What's going on around the country/world
 ## add a print screen funciton bound to some key on the number pad
 
 ## add a force refresh button?
-
-## should synopsis move from dash to page?
 
 ## def halfhour_update( parent ):
 ##    parent.thing.update()
@@ -36,6 +34,7 @@ Page 2,3,.. - What's going on around the country/world
 """
 
 #import threading
+import platform
 import tkinter as tk
 import pages   as pg
 import goes, nexrad
@@ -58,15 +57,15 @@ class WxFrame( tk.Tk ):
         
         # Exit on Esc
         self.bind( "<Escape>", lambda x: self.destroy() )
-        # Turn page on Enter ## will be amended to GPIO input on Pi
-        #self.bind( "<Return>", lambda x: self.turn_page() )
+        # Turn page on Enter
+        self.bind( "<Return>", lambda x: self.turn_page() )
         # Bind all the number keys to toggle pages by number
         for i in range(10):
            self.bind(str(i), self.toggle_page)
-        # Bind asterisk to pause animations
-        self.bind( "<*>", lambda x: self.pause() )
+           
+        # Bind animation controls
+        self.bind( "<asterisk>", lambda x: self.pause() )
         self.paused = False
-        # Animation speed controls
         self.bind( "-", lambda x: self.minus() )
         self.bind( "+", lambda x: self.plus()  )
         self.anim_wait = 100
@@ -122,10 +121,18 @@ class WxFrame( tk.Tk ):
         self.paused = False
         self.anim_wait = 100
         self.current_page = int(n.char)
-        #self.dash.update_synopsis( self )
         self.headtext.config(text = self.ps[self.current_page].name)
         self.ps[self.current_page].show()
-        #self.dash.tkraise()
+        
+    def turn_page( self ):
+        ''' Advance to the next page in self.ps, wrap around at the end '''
+        self.ps[self.current_page].disappear()
+        if self.current_page < len(self.ps)-1:
+            self.current_page+=1
+        else:
+            self.current_page = 0
+        self.headtext.config(text = self.ps[self.current_page].name)
+        self.ps[self.current_page].show()
         
     def status_dialogue( self, string ):
         self.status = tk.Frame( self )
@@ -163,18 +170,6 @@ class WxFrame( tk.Tk ):
         else:
             # Increase wait time between frames
             self.anim_wait = min(500, self.anim_wait+30)
-        
-    # def turn_page( self ):
-    #     #
-    #     self.ps[self.current_page].disappear()
-    #     if self.current_page < 2:
-    #         self.current_page+=1
-    #     else:
-    #         self.current_page = 0
-    #     self.headtext.config(text = self.ps[self.current_page].name)
-    #     # self.dash.update_synopsis( self )
-    #     #self.current_page = abs( self.current_page - 1 )
-    #     self.ps[self.current_page].show()
         
     # def update_15min( self ):
     #     threading.Thread(target=self.thread_test).start()
