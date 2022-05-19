@@ -8,6 +8,8 @@ WxFrame pages defined
 
 ## Maybe add a California fire monitoring page?
 
+## Non-weather page (news / stocks?)
+
 ## The Pivotal and the Bentley maps both have associated forecasts
 ##  on the same plots.  The QuadPlotPages could toggle through times
 ##  by using +/-
@@ -21,20 +23,6 @@ from get_img  import *
 from nws_read import get_wrh, get_discussion, get_marine
 
 
-class FcstFrame( tk.Frame ):
-    def __init__(self, parent, string):
-        tk.Frame.__init__(self, parent)#, relief=tk.RAISED)
-        
-        htmlstyle = '<h6 style="background-color:Black; color:White">'
-        
-        self.fcst = HTMLLabel(self, html=htmlstyle+string+"</h6>")
-        self.fcst.pack()
-        
-    def disappear(self):
-        self.fcst.destroy()
-        self.destroy()
-
-
 class Page00( tk.Frame ):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
@@ -42,31 +30,16 @@ class Page00( tk.Frame ):
         self.name = 'Local Forecast'
         
     def show( self ):
-        # Home NWS Meteogram
+        # Home NOAA Meteogram
         self.longmet = tk.Frame( self.parent )
         self.longmet.place(relx=0, rely=0.88, anchor="sw")
-        
-        #self.met00 = ImageTk.PhotoImage( Image.open(home_meteogram[1]) )
         img = Image.open(img_dir+"test_plot.png")
         resized = img.crop((270, 35, 2200, 485))
         self.met00 = ImageTk.PhotoImage( resized )
         self.homemet00 = tk.Label(self.longmet, image=self.met00, borderwidth=0)
         self.homemet00.pack(side=tk.LEFT, fill=tk.BOTH)
-        # self.met48 = ImageTk.PhotoImage( Image.open(hm48_meteogram[1]) )
-        # self.homemet48 = tk.Label(self.longmet, image=self.met48)
-        # self.homemet48.pack(side=tk.LEFT, fill=tk.BOTH)
         
-        # CA forecast maps
-        
-        
-        # img = Image.open(home_meteogram[1])
-        # self.homemetimg = ImageTk.PhotoImage(img)
-        # self.homemet = tk.Label(image=self.homemetimg)
-        # self.homemet.place(anchor='w', relx=0, rely=0.65)
-        
-        # self.fcstframe = FcstFrame( self.parent, get_wrh() )
-        # self.fcstframe.place(anchor='nw', relx=0, rely=0.06)
-        
+        # Western Regional text forecast for Monterey / Big Sur
         w = get_wrh()
         self.wrh = tk.Frame( self.parent, relief=tk.RAISED, borderwidth=2 )
         self.wrh.place(relx=0., rely=0.06, anchor='nw')
@@ -80,7 +53,6 @@ class Page00( tk.Frame ):
         
         # Make NWS discussion frame
         d = get_discussion()
-        print( len(d) )
         textdiv = 90. if len(d) < 2300 else 100.
         self.discussion = tk.Frame( self.parent, relief=tk.RAISED, borderwidth=2 )
         self.discussion.place(relx=0.99, rely=0.06, anchor='ne')
@@ -91,11 +63,9 @@ class Page00( tk.Frame ):
                                   padx=10, pady=5, wraplength=1250)
         
     def disappear( self ):
-        #self.homemet00.destroy()
         self.longmet.destroy()
         self.wrh.destroy()
         self.discussion.destroy()
-        #self.fcstframe.disappear()
 
 
 class MarineCAPage( tk.Frame ):
@@ -108,13 +78,15 @@ class MarineCAPage( tk.Frame ):
         # Surfline SST plot, resized to ~ 2/3
         img = Image.open(surfline_sst[1])
         resized = img.resize((644, 397),Image.ANTIALIAS)
-        self.SST = ImageTk.PhotoImage(resized)
+        cropped = resized.crop((0, 0, 460, 397))
+        self.SST = ImageTk.PhotoImage(cropped)
         self.sst = tk.Label(image=self.SST)
         self.sst.place(anchor='nw', relx=0., rely=0.09)
         # Surfline WND plot, resized to ~ 2/3
         img = Image.open(surfline_wnd[1])
         resized = img.resize((644, 397),Image.ANTIALIAS)
-        self.WND = ImageTk.PhotoImage(resized)
+        cropped = resized.crop((0, 0, 460, 397))
+        self.WND = ImageTk.PhotoImage(cropped)
         self.wnd = tk.Label(image=self.WND)
         self.wnd.place(anchor='nw', relx=0., rely=0.48)
         # CDIP swell map, cropped
@@ -122,18 +94,18 @@ class MarineCAPage( tk.Frame ):
         cropped = img.crop((60, 105, 580, 790))
         self.CDIP = ImageTk.PhotoImage(cropped)
         self.cdip = tk.Label(image=self.CDIP)
-        self.cdip.place(anchor='nw', relx=0.35, rely=0.15)
+        self.cdip.place(anchor='nw', relx=0.26, rely=0.214)
         # Buoy table
         self.parent.tab = buoy.BuoyTable(self.parent)
-        self.parent.tab.place(anchor='center', relx=0.81, rely=0.6)
+        self.parent.tab.place(anchor='nw', relx=0.55, rely=0.45)
         # Marine synopsis
         self.marine = tk.Frame( self.parent, relief=tk.RAISED, borderwidth=2 )
-        self.marine.place(relx=0.81, rely=0.2, anchor='center')
-        self.marinelabel = tk.Label( self.marine, text=get_marine(), justify=tk.LEFT, height=10 )
+        self.marine.place(relx=0.26, rely=0.09, anchor='nw')
+        self.marinelabel = tk.Label( self.marine, text=get_marine(), justify=tk.LEFT, height=5 )
         self.marinelabel.pack( )
         self.marinelabel.config(fg="white", bg="midnight blue", 
                                 font=('lucida', int(self.parent.height/75.)),
-                                padx=15, pady=15, wraplength=600)
+                                padx=15, pady=3, wraplength=1300)
         
     def disappear( self ):
         self.cdip.destroy()

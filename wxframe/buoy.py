@@ -38,6 +38,16 @@ def get_buoy_table( url ):
         return varnames, obs
 
 
+def populate_obs( vars_column, varsn, obsn ):
+    obs_column = ['---' for i in range(len(vars_column))]
+    for i in range(len(obsn)):
+        for j in range(len(vars_column)):
+            if varsn[i] == vars_column[j]:
+                obs_column[j] = obsn[i]
+                break
+    return obs_column
+
+
 def merge_buoy_data( ):
     '''
     Creates tabular list for buoy vars and data
@@ -52,19 +62,8 @@ def merge_buoy_data( ):
             pass
         else:
             vars_column.append(var)
-    # Populate obs columns
-    obs1_column = ['---' for i in range(len(vars_column))]
-    for i in range(len(obs1)):
-        for j in range(len(vars_column)):
-            if vars1[i] == vars_column[j]:
-                obs1_column[j] = obs1[i]
-                break
-    obs2_column = ['---' for i in range(len(vars_column))]
-    for i in range(len(obs2)):
-        for j in range(len(vars_column)):
-            if vars2[i] == vars_column[j]:
-                obs2_column[j] = obs2[i]
-                break
+    obs1_column = populate_obs(vars_column, vars1, obs1)
+    obs2_column = populate_obs(vars_column, vars2, obs2)
     # Populate data table
     data = [ ('NOAA NBDC Readings', 'NBDC 46042', 'MBARI 46092') ]
     for i in range(len(vars_column)):

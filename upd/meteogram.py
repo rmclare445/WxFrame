@@ -5,7 +5,7 @@ Retrieve most recent NOAA meteogram data for Pacific Grove, plot it
 
 """
 
-import requests
+import requests, math
 import numpy as np
 import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
@@ -42,12 +42,12 @@ def fix_data( data ):
     # Parse integer values from NaNs
     for i, value in enumerate(data):
         data[i] = int(value) if value else float('nan')
-    return data#[:108]
+    return data
 
 
 def plot_meteogram( data_dict ):
     
-    times = data_dict['time']#[:108]
+    times = data_dict['time']
     time = []
     for t in times:
         hr = int(t[11:13])
@@ -87,9 +87,14 @@ def plot_meteogram( data_dict ):
                   sizes=dict(spacing=0.2, height=0.3, width=0.2), zorder=2.5, barbcolor='dodgerblue' )
     axs[1].plot(range(len(times)), data_dict['wspd'], color='plum', marker='.')
     axs[1].plot(range(len(times)), data_dict['gust'], color='fuchsia', marker='.')
-    start, end = (-10,40)
+    start, end = (-10,50)
     axs[1].yaxis.set_ticks(np.arange(start, end, 10))
-    axs[1].set_ylim((-5, 38))
+    max_wind = max( max(data_dict['wspd']), max(data_dict['gust']) )
+    if max_wind > 37:
+        ymax = math.ceil(max_wind/10.)*10 - 1
+    else:
+        ymax = 38        
+    axs[1].set_ylim((-5, ymax))
     axs[1].tick_params(axis="y",direction="in", pad=-22, labelright=True)
     axs[1].grid(True, linewidth=.25)
 
@@ -109,7 +114,7 @@ def plot_meteogram( data_dict ):
     
     xpt = 80
     ypt = 81
-    axs[0].text( xpt, ypt, 'Temperature', color='r', weight='bold' )
+    axs[0].text( xpt,    ypt, 'Temperature', color='r', weight='bold' )
     axs[0].text( xpt+13, ypt, 'Dew Point', color='yellowgreen', weight='bold' )
     axs[0].text( xpt+24, ypt, 'Wind Speed', color='plum', weight='bold' )
     axs[0].text( xpt+36, ypt, 'Gust', color='fuchsia', weight='bold' )
