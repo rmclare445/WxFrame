@@ -17,7 +17,6 @@ WxFrame pages defined
 """
 
 import tkinter as tk
-#from tkhtmlview import HTMLLabel
 import buoy
 from get_img  import *
 from nws_read import get_wrh, get_discussion, get_marine
@@ -53,7 +52,10 @@ class Page00( tk.Frame ):
         
         # Make NWS discussion frame
         d = get_discussion()
-        textdiv = 90. if len(d) < 2300 else 100.
+        try:
+            textdiv = 90. if len(d) < 2300 else 100.
+        except:
+            d = 'No discussion right now.'
         self.discussion = tk.Frame( self.parent, relief=tk.RAISED, borderwidth=2 )
         self.discussion.place(relx=0.99, rely=0.06, anchor='ne')
         self.discusslabel = tk.Label( self.discussion, text=d, justify=tk.LEFT )
@@ -149,8 +151,8 @@ class FullAnimPage( tk.Frame ):
             self.c = (len(self.lst)-1)
         else:
             self.c = self.c + 1 * direction
-        self.label.destroy()
-        self.disp()
+        self.frame = ImageTk.PhotoImage( Image.open(self.loc+self.lst[self.cdir*self.c]) )
+        self.label.config(image=self.frame)
         
     def cycle( self ):
         if not self.parent.paused:

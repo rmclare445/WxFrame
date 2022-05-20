@@ -57,18 +57,25 @@ class WxFrame( tk.Tk ):
         
         # Exit on Esc
         self.bind( "<Escape>", lambda x: self.destroy() )
-        # Turn page on Enter
-        self.bind( "<Return>", lambda x: self.turn_page() )
+        # Turn page on Enter (For conventional and Macally inputs)
+        self.bind( "<Return>",   lambda x: self.turn_page() )
+        self.bind( "<KP_Enter>", lambda x: self.turn_page() )
         # Bind all the number keys to toggle pages by number
         for i in range(10):
-           self.bind(str(i), self.toggle_page)
+           self.bind( str(i),            self.toggle_page)
+           self.bind( '<KP_'+str(i)+">", self.toggle_page)
            
         # Bind animation controls
-        self.bind( "<asterisk>", lambda x: self.pause() )
+        self.bind( "<asterisk>",    lambda x: self.pause() )
+        self.bind( "<KP_Multiply>", lambda x: self.pause() )
         self.paused = False
-        self.bind( "-", lambda x: self.minus() )
-        self.bind( "+", lambda x: self.plus()  )
+        self.bind( "-",             lambda x: self.minus() )
+        self.bind( "<KP_Subtract>", lambda x: self.minus() )
+        self.bind( "+",             lambda x: self.plus()  )
+        self.bind( "<KP_Add>",      lambda x: self.plus()  )
         self.anim_wait = 100
+        
+        # KP_Decimal, KP_Divide, equal, BackSpace
         
         # Get screen resources
         self.width  = self.winfo_screenwidth()
