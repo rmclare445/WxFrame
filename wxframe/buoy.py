@@ -94,13 +94,16 @@ class Table:
                 self.e.insert(tk.END, datum)
                 
     def fix_data( self, datum ):
-        if '&deg;C' in datum:
-            quant = float(datum[:-6]) * (9/5.) + 32.
-            return "%0.1f\u00B0F" % quant
-        if 'm/s' in datum:
-            quant = float(datum[:-3]) * 2.23694
-            return "%01d mph (%s)" % (quant, datum)
-        return datum
+        try:
+            if '&deg;C' in datum:
+                quant = float(datum[:-6]) * (9/5.) + 32.
+                return "%0.1f\u00B0F" % quant
+            if 'm/s' in datum:
+                quant = float(datum[:-3]) * 2.23694
+                return "%01d mph (%s)" % (quant, datum)
+            return datum
+        except:
+            return datum
               
 
 class BuoyTable( tk.Frame ):
