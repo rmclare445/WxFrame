@@ -149,8 +149,8 @@ class FullAnimPage( tk.Frame ):
             self.c = (len(self.lst)-1)
         else:
             self.c = self.c + 1 * direction
-        self.label.destroy()
-        self.disp()
+        self.frame = ImageTk.PhotoImage( Image.open(self.loc+self.lst[self.cdir*self.c]) )
+        self.label.config(image=self.frame)
         
     def cycle( self ):
         if not self.parent.paused:
