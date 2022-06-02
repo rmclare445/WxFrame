@@ -171,6 +171,7 @@ class QuadPlotPage( tk.Frame ):
         self.centery = 0.5
         if name == "CONUS Daily":
             self.images  = images[:4]
+            self.centerx = 0.6
             self.xscale  = 0.68
             self.yscale  = 0.63
         elif name == "CONUS Analysis":
