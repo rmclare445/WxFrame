@@ -63,7 +63,7 @@ def get_wrh( url=noaa_url ):
         header = content[19:content.find(" .")]
         middle = content[content.find("\n ."):content.find('&&')-5]
         middle = middle.replace("\n .", "walrus")
-        middle = middle.replace("\n", " ")
+        middle = middle.replace("\n", "")
         middle = middle.replace("walrus", "\n\n ")
         return header + middle
 

@@ -42,13 +42,11 @@ class Page00( tk.Frame ):
         w = get_wrh()
         self.wrh = tk.Frame( self.parent, relief=tk.RAISED, borderwidth=2 )
         self.wrh.place(relx=0., rely=0.06, anchor='nw')
-        self.wrhlabel = tk.Label( self.wrh, text=w, justify=tk.LEFT )
+        self.wrhlabel = tk.Label( self.wrh, text=w, height=23, anchor='nw', justify=tk.LEFT )
         self.wrhlabel.pack( )
         self.wrhlabel.config(fg="white", bg="black", 
-                                  font=('courier new', int(self.parent.height/110.), 'bold'),
-                                  padx=5, pady=2, wraplength=600)
-        
-        
+                                  font=('arial black', int(self.parent.height/110)),
+                                  padx=5, pady=4, wraplength=600)
         
         # Make NWS discussion frame
         d = get_discussion()
@@ -56,13 +54,15 @@ class Page00( tk.Frame ):
             textdiv = 90. if len(d) < 2300 else 100.
         except:
             d = 'No discussion right now.'
+            textdiv = 90.
         self.discussion = tk.Frame( self.parent, relief=tk.RAISED, borderwidth=2 )
         self.discussion.place(relx=0.99, rely=0.06, anchor='ne')
-        self.discusslabel = tk.Label( self.discussion, text=d, justify=tk.LEFT )
+        self.discusslabel = tk.Label( self.discussion, text=d, height=22, anchor='nw', 
+                                      justify=tk.LEFT )
         self.discusslabel.pack( )
         self.discusslabel.config(fg="white", bg="black", 
                                   font=('lucida', int(self.parent.height/textdiv)),#90.)),
-                                  padx=10, pady=5, wraplength=1250)
+                                  padx=10, pady=4, wraplength=1250)
         
     def disappear( self ):
         self.longmet.destroy()
@@ -153,6 +153,7 @@ class FullAnimPage( tk.Frame ):
             self.c = self.c + 1 * direction
         self.frame = ImageTk.PhotoImage( Image.open(self.loc+self.lst[self.cdir*self.c]) )
         self.label.config(image=self.frame)
+        self.label.update()
         
     def cycle( self ):
         if not self.parent.paused:

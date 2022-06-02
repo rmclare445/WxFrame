@@ -5,6 +5,8 @@ Weather Frame driver script
 Page 1 - Dashboard, pertinent locaL information
 Page 2,3,.. - What's going on around the country/world
 
+## Must try to toggle pages without destroying labels, try pack() and forget_pack()
+
 ## should add tides to dashboard (or tide table to marine page)
 
 ## combine goes.py and nexrad.py into one module?
@@ -33,7 +35,6 @@ Page 2,3,.. - What's going on around the country/world
 
 """
 
-#import threading
 import platform
 import tkinter as tk
 import pages   as pg
@@ -75,22 +76,21 @@ class WxFrame( tk.Tk ):
         self.bind( "<KP_Add>",      lambda x: self.plus()  )
         self.anim_wait = 100
         
-        # KP_Decimal, KP_Divide, equal, BackSpace
+        # There's also KP_Decimal, KP_Divide, equal, BackSpace
         
         # Get screen resources
         self.width  = self.winfo_screenwidth()
         self.height = self.winfo_screenheight()
         
-        #
+        # Update booleans for pausing animations during updating
         self.goes_update = False
         self.nexrad_update = False
         
         # Get new images
         print("Getting updated images")
-        #get_imgs()
-        #nexrad.get_nexrad(self)
-        #goes.get_goes(self)
-        #self.update_15min()
+        get_imgs()
+        nexrad.get_nexrad(self)
+        goes.get_goes(self)
         print("Updated images retrieved")
         
         # Initialize pages, show homepage
@@ -163,7 +163,6 @@ class WxFrame( tk.Tk ):
         if self.paused and type(self.ps[self.current_page]).__name__ == "FullAnimPage":
             # Single frame advance when paused
             self.ps[self.current_page].advance( 1 )
-            self.ps[self.current_page].cycle()
         else:
             # Decrease wait time between frames
             self.anim_wait = max(10, self.anim_wait-30)
@@ -173,7 +172,6 @@ class WxFrame( tk.Tk ):
         if self.paused and type(self.ps[self.current_page]).__name__ == "FullAnimPage":
             # Single frame retreat when paused
             self.ps[self.current_page].advance( -1 )
-            self.ps[self.current_page].cycle()
         else:
             # Increase wait time between frames
             self.anim_wait = min(500, self.anim_wait+30)
@@ -191,6 +189,12 @@ class WxFrame( tk.Tk ):
 
 
 if __name__ == "__main__":
-    app = WxFrame()
-    app.mainloop()
-    ## GPIO cleanup for RPi
+    # Detect if on Raspberry Pi (method works but less than ideal)
+    rpi = True if platform.system() == "Linux" else False
+    try:
+        app = WxFrame()
+        app.mainloop()
+    finally:
+        if rpi:
+            ## GPIO cleanup for RPi
+            pass
