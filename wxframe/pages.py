@@ -23,6 +23,7 @@ from nws_read import get_wrh, get_discussion, get_marine
 
 
 class UserHomePage( tk.Frame ):
+    ''' Home page showing local forecast informations '''
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
         self.parent = parent
@@ -63,7 +64,6 @@ class UserHomePage( tk.Frame ):
         self.discusslabel.config(fg="white", bg="black", 
                                   font=('lucida', int(self.parent.height/textdiv)),#90.)),
                                   padx=10, pady=4, wraplength=1250)
-        
         self.refresh()
         
     def refresh( self ):
@@ -119,6 +119,33 @@ class MarineCAPage( tk.Frame ):
         self.marinelabel.config(fg="white", bg="midnight blue", 
                                 font=('lucida', int(self.parent.height/75.)),
                                 padx=15, pady=3, wraplength=1300)
+        self.refresh()
+    
+    def refresh( self ):
+        # Surfline SST plot, resized to ~ 2/3
+        img = Image.open(surfline_sst[1])
+        resized = img.resize((644, 397),Image.ANTIALIAS)
+        cropped = resized.crop((0, 0, 460, 397))
+        self.SST = ImageTk.PhotoImage(cropped)
+        self.sst.config(image=self.SST)
+        # Surfline WND plot, resized to ~ 2/3
+        img = Image.open(surfline_wnd[1])
+        resized = img.resize((644, 397),Image.ANTIALIAS)
+        cropped = resized.crop((0, 0, 460, 397))
+        self.WND = ImageTk.PhotoImage(cropped)
+        self.wnd.config(image=self.WND)
+        # CDIP swell map, cropped
+        img = Image.open(cdip_swell[1])
+        cropped = img.crop((60, 105, 580, 790))
+        self.CDIP = ImageTk.PhotoImage(cropped)
+        self.cdip.config(image=self.CDIP)
+        # Buoy table
+        self.parent.tab.destroy()
+        self.parent.tab = buoy.BuoyTable(self.parent)
+        self.parent.tab.place(anchor='nw', relx=0.55, rely=0.45)
+        # Marine synopsis
+        self.marinelabel.config(text=get_marine())
+        self.marinelabel.after(60000, self.refresh)
         
     def disappear( self ):
         self.cdip.destroy()
@@ -126,8 +153,6 @@ class MarineCAPage( tk.Frame ):
         self.wnd.destroy()
         self.parent.tab.destroy()
         self.marine.destroy()
-        
-    # Can probably refresh by just calling show() again
         
         
 class FullAnimPage( tk.Frame ):
