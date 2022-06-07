@@ -22,7 +22,7 @@ from get_img  import *
 from nws_read import get_wrh, get_discussion, get_marine
 
 
-class Page00( tk.Frame ):
+class UserHomePage( tk.Frame ):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
         self.parent = parent
@@ -37,7 +37,7 @@ class Page00( tk.Frame ):
         self.met00 = ImageTk.PhotoImage( resized )
         self.homemet00 = tk.Label(self.longmet, image=self.met00, borderwidth=0)
         self.homemet00.pack(side=tk.LEFT, fill=tk.BOTH)
-        
+
         # Western Regional text forecast for Monterey / Big Sur
         w = get_wrh()
         self.wrh = tk.Frame( self.parent, relief=tk.RAISED, borderwidth=2 )
@@ -47,7 +47,7 @@ class Page00( tk.Frame ):
         self.wrhlabel.config(fg="white", bg="black", 
                                   font=('arial black', int(self.parent.height/110)),
                                   padx=5, pady=4, wraplength=600)
-        
+
         # Make NWS discussion frame
         d = get_discussion()
         try:
@@ -64,6 +64,17 @@ class Page00( tk.Frame ):
                                   font=('lucida', int(self.parent.height/textdiv)),#90.)),
                                   padx=10, pady=4, wraplength=1250)
         
+        self.refresh()
+        
+    def refresh( self ):
+        img = Image.open(img_dir+"test_plot.png")
+        resized = img.crop((270, 35, 2200, 485))
+        self.met00 = ImageTk.PhotoImage( resized )
+        self.homemet00.config( image=self.met00 )
+        self.wrhlabel.config( text=get_wrh() )
+        self.discusslabel.config( text=get_discussion() )
+        self.homemet00.after(60000, self.refresh)
+
     def disappear( self ):
         self.longmet.destroy()
         self.wrh.destroy()
