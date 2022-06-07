@@ -2,31 +2,17 @@
 
 Weather Frame driver script
 
-Page 1 - Dashboard, pertinent locaL information
-Page 2,3,.. - What's going on around the country/world
-
 ## Must try to toggle pages without destroying labels, try pack() and forget_pack()
 
 ## should add tides to dashboard (or tide table to marine page)
 
-## combine goes.py and nexrad.py into one module?
-
 ## integrate with thermostat and ESP-2866 weather station
-
-## update cycles every minute but with specific time conditionals?
-
-## updates should be managed by a separate block of function(s) in a new file which ingest the WxFrame as a parent
-
-## Potentially, updates could be handled by wget scripts?  It would be easy to command a backgorund process on linux
 
 ## make a function that slowly cycles randomly thru pages
 
 ## add a print screen funciton bound to some key on the number pad
 
 ## add a force refresh button?
-
-## def halfhour_update( parent ):
-##    parent.thing.update()
 
 ## Honestly, should do much of the data analysis and plot rendering locally.
 ##  Make better plots with local times and my preferences
@@ -57,7 +43,7 @@ class WxFrame( tk.Tk ):
         self.current_page = 0
         
         # Exit on Esc
-        self.bind( "<Escape>", lambda x: self.destroy() )
+        self.bind( "<Escape>",   lambda x: self.destroy()   )
         # Turn page on Enter (For conventional and Macally inputs)
         self.bind( "<Return>",   lambda x: self.turn_page() )
         self.bind( "<KP_Enter>", lambda x: self.turn_page() )
@@ -175,17 +161,6 @@ class WxFrame( tk.Tk ):
         else:
             # Increase wait time between frames
             self.anim_wait = min(500, self.anim_wait+30)
-        
-    # def update_15min( self ):
-    #     threading.Thread(target=self.thread_test).start()
-    #     #self.after(900000, self.update_15min)
-    #     self.after(60000, self.update_15min)
-        
-    # def thread_test( self ):
-    #     # self.status_dialogue( 'UPDATING...' )
-    #     nexrad.get_nexrad( self )
-    #     #goes.get_goes( self )
-    #     # self.rm_status_dialogue()
 
 
 if __name__ == "__main__":
