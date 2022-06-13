@@ -22,7 +22,8 @@ from get_img  import *
 from nws_read import get_wrh, get_discussion, get_marine
 
 
-class Page00( tk.Frame ):
+class UserHomePage( tk.Frame ):
+    ''' Home page showing local forecast informations '''
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
         self.parent = parent
@@ -37,33 +38,43 @@ class Page00( tk.Frame ):
         self.met00 = ImageTk.PhotoImage( resized )
         self.homemet00 = tk.Label(self.longmet, image=self.met00, borderwidth=0)
         self.homemet00.pack(side=tk.LEFT, fill=tk.BOTH)
-        
+
         # Western Regional text forecast for Monterey / Big Sur
         w = get_wrh()
         self.wrh = tk.Frame( self.parent, relief=tk.RAISED, borderwidth=2 )
         self.wrh.place(relx=0., rely=0.06, anchor='nw')
-        self.wrhlabel = tk.Label( self.wrh, text=w, justify=tk.LEFT )
+        self.wrhlabel = tk.Label( self.wrh, text=w, height=23, anchor='nw', justify=tk.LEFT )
         self.wrhlabel.pack( )
         self.wrhlabel.config(fg="white", bg="black", 
-                                  font=('courier new', int(self.parent.height/110.), 'bold'),
-                                  padx=5, pady=2, wraplength=600)
-        
-        
-        
+                                  font=('arial black', int(self.parent.height/110)),
+                                  padx=5, pady=4, wraplength=600)
+
         # Make NWS discussion frame
         d = get_discussion()
         try:
             textdiv = 90. if len(d) < 2300 else 100.
         except:
             d = 'No discussion right now.'
+            textdiv = 90.
         self.discussion = tk.Frame( self.parent, relief=tk.RAISED, borderwidth=2 )
         self.discussion.place(relx=0.99, rely=0.06, anchor='ne')
-        self.discusslabel = tk.Label( self.discussion, text=d, justify=tk.LEFT )
+        self.discusslabel = tk.Label( self.discussion, text=d, height=22, anchor='nw', 
+                                      justify=tk.LEFT )
         self.discusslabel.pack( )
         self.discusslabel.config(fg="white", bg="black", 
                                   font=('lucida', int(self.parent.height/textdiv)),#90.)),
-                                  padx=10, pady=5, wraplength=1250)
+                                  padx=10, pady=4, wraplength=1250)
+        self.refresh()
         
+    def refresh( self ):
+        img = Image.open(img_dir+"test_plot.png")
+        resized = img.crop((270, 35, 2200, 485))
+        self.met00 = ImageTk.PhotoImage( resized )
+        self.homemet00.config( image=self.met00 )
+        self.wrhlabel.config( text=get_wrh() )
+        self.discusslabel.config( text=get_discussion() )
+        self.homemet00.after(60000, self.refresh)
+
     def disappear( self ):
         self.longmet.destroy()
         self.wrh.destroy()
@@ -108,6 +119,33 @@ class MarineCAPage( tk.Frame ):
         self.marinelabel.config(fg="white", bg="midnight blue", 
                                 font=('lucida', int(self.parent.height/75.)),
                                 padx=15, pady=3, wraplength=1300)
+        self.refresh()
+    
+    def refresh( self ):
+        # Surfline SST plot, resized to ~ 2/3
+        img = Image.open(surfline_sst[1])
+        resized = img.resize((644, 397),Image.ANTIALIAS)
+        cropped = resized.crop((0, 0, 460, 397))
+        self.SST = ImageTk.PhotoImage(cropped)
+        self.sst.config(image=self.SST)
+        # Surfline WND plot, resized to ~ 2/3
+        img = Image.open(surfline_wnd[1])
+        resized = img.resize((644, 397),Image.ANTIALIAS)
+        cropped = resized.crop((0, 0, 460, 397))
+        self.WND = ImageTk.PhotoImage(cropped)
+        self.wnd.config(image=self.WND)
+        # CDIP swell map, cropped
+        img = Image.open(cdip_swell[1])
+        cropped = img.crop((60, 105, 580, 790))
+        self.CDIP = ImageTk.PhotoImage(cropped)
+        self.cdip.config(image=self.CDIP)
+        # Buoy table
+        self.parent.tab.destroy()
+        self.parent.tab = buoy.BuoyTable(self.parent)
+        self.parent.tab.place(anchor='nw', relx=0.55, rely=0.45)
+        # Marine synopsis
+        self.marinelabel.config(text=get_marine())
+        self.marinelabel.after(60000, self.refresh)
         
     def disappear( self ):
         self.cdip.destroy()
@@ -115,8 +153,6 @@ class MarineCAPage( tk.Frame ):
         self.wnd.destroy()
         self.parent.tab.destroy()
         self.marine.destroy()
-        
-    # Can probably refresh by just calling show() again
         
         
 class FullAnimPage( tk.Frame ):
@@ -153,6 +189,7 @@ class FullAnimPage( tk.Frame ):
             self.c = self.c + 1 * direction
         self.frame = ImageTk.PhotoImage( Image.open(self.loc+self.lst[self.cdir*self.c]) )
         self.label.config(image=self.frame)
+        self.label.update()
         
     def cycle( self ):
         if not self.parent.paused:
@@ -170,6 +207,7 @@ class QuadPlotPage( tk.Frame ):
         self.centery = 0.5
         if name == "CONUS Daily":
             self.images  = images[:4]
+            self.centerx = 0.6
             self.xscale  = 0.68
             self.yscale  = 0.63
         elif name == "CONUS Analysis":

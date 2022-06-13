@@ -82,10 +82,8 @@ class Dashboard( tk.Frame ):
         self.riseset.after(1800000, self.update_riseset)
         
     def update_synopsis( self, parent ):
-        # Get standard and marine synopses from NWS
-        synops = get_synopsis()
-        #content = marine if parent.ps[parent.current_page].name == 'Marine' else synops
-        content = synops
+        # Get synopses from NWS
+        content = get_synopsis()
         multiplier = 0.55 * (1. - min(len(content)/2700., .9))
         self.synopsis.config(text = content, font=(self.dash_font[0], int(self.dash_font[1]*multiplier)))
         self.synopsis.after(1800000, self.update_synopsis)
