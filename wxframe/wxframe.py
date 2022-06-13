@@ -10,8 +10,6 @@ Weather Frame driver script
 
 ## make a function that slowly cycles randomly thru pages
 
-## add a print screen funciton bound to some key on the number pad
-
 ## add a force refresh button?
 
 ## Honestly, should do much of the data analysis and plot rendering locally.
@@ -21,12 +19,12 @@ Weather Frame driver script
 
 """
 
-import platform
+import time, platform
 import tkinter as tk
 import pages   as pg
 import goes, nexrad
 from dashboard import Dashboard
-from get_img   import get_imgs
+from get_img   import get_imgs, ImageGrab
 
 
 class WxFrame( tk.Tk ):
@@ -49,20 +47,23 @@ class WxFrame( tk.Tk ):
         self.bind( "<KP_Enter>", lambda x: self.turn_page() )
         # Bind all the number keys to toggle pages by number
         for i in range(10):
-           self.bind( str(i),            self.toggle_page)
-           self.bind( '<KP_'+str(i)+">", self.toggle_page)
+           self.bind( str(i),            self.toggle_page   )
+           self.bind( '<KP_'+str(i)+">", self.toggle_page   )
            
-        # Bind animation controls
-        self.bind( "<asterisk>",    lambda x: self.pause() )
-        self.bind( "<KP_Multiply>", lambda x: self.pause() )
+        # Bind animation controls and set initial conditions
+        self.bind( "<asterisk>",    lambda x: self.pause()  )
+        self.bind( "<KP_Multiply>", lambda x: self.pause()  )
         self.paused = False
-        self.bind( "-",             lambda x: self.minus() )
-        self.bind( "<KP_Subtract>", lambda x: self.minus() )
-        self.bind( "+",             lambda x: self.plus()  )
-        self.bind( "<KP_Add>",      lambda x: self.plus()  )
+        self.bind( "-",             lambda x: self.minus()  )
+        self.bind( "<KP_Subtract>", lambda x: self.minus()  )
+        self.bind( "+",             lambda x: self.plus()   )
+        self.bind( "<KP_Add>",      lambda x: self.plus()   )
         self.anim_wait = 100
         
-        # There's also KP_Decimal, KP_Divide, equal, BackSpace
+        # Take screenshot on "="
+        self.bind( "<equal>", lambda x: self.screenshot() )
+        
+        # There's also KP_Decimal, KP_Divide, BackSpace
         
         # Get screen resources
         self.width  = self.winfo_screenwidth()
@@ -138,12 +139,12 @@ class WxFrame( tk.Tk ):
         
     def rm_status_dialogue( self ):
         self.status.destroy()
-        
+
     def pause( self ):
         ''' Pause animations '''
         if type(self.ps[self.current_page]).__name__ == "FullAnimPage":
             self.paused = not self.paused
-            
+
     def plus( self ):
         ''' Animation control '''
         if self.paused and type(self.ps[self.current_page]).__name__ == "FullAnimPage":
@@ -152,7 +153,7 @@ class WxFrame( tk.Tk ):
         else:
             # Decrease wait time between frames
             self.anim_wait = max(10, self.anim_wait-30)
-        
+
     def minus( self ):
         ''' Animation control '''
         if self.paused and type(self.ps[self.current_page]).__name__ == "FullAnimPage":
@@ -161,6 +162,10 @@ class WxFrame( tk.Tk ):
         else:
             # Increase wait time between frames
             self.anim_wait = min(500, self.anim_wait+30)
+            
+    def screenshot( self ):
+        ImageGrab.grab().save( "screenshots/"+time.strftime("%Y%m%d%H%M%S")+".png" )
+        time.sleep(1)
 
 
 if __name__ == "__main__":

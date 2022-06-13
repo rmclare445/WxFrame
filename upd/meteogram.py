@@ -51,7 +51,7 @@ def plot_meteogram( data_dict ):
     time = []
     for t in times:
         hr = int(t[11:13])
-        meridiem = 'am' if hr < 12 or hr == 0 else 'pm'
+        meridiem = 'am' if hr < 12 else 'pm'
         hr = hr if hr <= 12 else hr-12
         time.append( str(hr)+meridiem )
         

@@ -65,7 +65,7 @@ def merge_buoy_data( ):
     obs1_column = populate_obs(vars_column, vars1, obs1)
     obs2_column = populate_obs(vars_column, vars2, obs2)
     # Populate data table
-    data = [ ('NOAA NBDC Readings', 'NBDC 46042', 'MBARI 46092') ]
+    data = [ ('NOAA NDBC Readings', 'NDBC 46042', 'MBARI 46092') ]
     for i in range(len(vars_column)):
         data.append( (vars_column[i], obs1_column[i], obs2_column[i]) )
             

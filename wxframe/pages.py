@@ -111,6 +111,13 @@ class MarineCAPage( tk.Frame ):
         # Buoy table
         self.parent.tab = buoy.BuoyTable(self.parent)
         self.parent.tab.place(anchor='nw', relx=0.55, rely=0.45)
+        # Buoy map
+        img = Image.open(r"C:\Users\Ryan\Documents\GitHub\WxFrame\img\ndbc_map.png")
+        cropped = img.crop((0, 50, 750, 240))
+        darker  = cropped.point(lambda p: p * 0.7)
+        self.NDBC = ImageTk.PhotoImage(darker)
+        self.ndbc = tk.Label(image=self.NDBC)
+        self.ndbc.place(anchor='nw', relx=0.55, rely=0.214)
         # Marine synopsis
         self.marine = tk.Frame( self.parent, relief=tk.RAISED, borderwidth=2 )
         self.marine.place(relx=0.26, rely=0.09, anchor='nw')
@@ -152,6 +159,7 @@ class MarineCAPage( tk.Frame ):
         self.sst.destroy()
         self.wnd.destroy()
         self.parent.tab.destroy()
+        self.ndbc.destroy()
         self.marine.destroy()
         
         
@@ -189,7 +197,6 @@ class FullAnimPage( tk.Frame ):
             self.c = self.c + 1 * direction
         self.frame = ImageTk.PhotoImage( Image.open(self.loc+self.lst[self.cdir*self.c]) )
         self.label.config(image=self.frame)
-        self.label.update()
         
     def cycle( self ):
         if not self.parent.paused:
