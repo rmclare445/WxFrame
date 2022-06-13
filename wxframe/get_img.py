@@ -7,7 +7,7 @@ Retrieve images from the web
 import shutil
 import requests
 import config.locs
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageGrab
 
 #####################################
 #                                   #
