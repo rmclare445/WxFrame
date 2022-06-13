@@ -165,6 +165,7 @@ class WxFrame( tk.Tk ):
             
     def screenshot( self ):
         ImageGrab.grab().save( "screenshots/"+time.strftime("%Y%m%d%H%M%S")+".png" )
+        time.sleep(1)
 
 
 if __name__ == "__main__":
