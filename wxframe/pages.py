@@ -189,7 +189,6 @@ class FullAnimPage( tk.Frame ):
             self.c = self.c + 1 * direction
         self.frame = ImageTk.PhotoImage( Image.open(self.loc+self.lst[self.cdir*self.c]) )
         self.label.config(image=self.frame)
-        self.label.update()
         
     def cycle( self ):
         if not self.parent.paused:
