@@ -88,7 +88,6 @@ class Table:
                     
                 self.e = tk.Entry(parent, width=colwidth, fg='blue', bg='gray66',
                                   font=rowfont)
-                 
                 self.e.grid(row=i, column=j)
                 datum = self.fix_data(data[i][j])
                 self.e.insert(tk.END, datum)
