@@ -112,9 +112,9 @@ class MarineCAPage( tk.Frame ):
         self.parent.tab = buoy.BuoyTable(self.parent)
         self.parent.tab.place(anchor='nw', relx=0.55, rely=0.45)
         # Buoy map
-        img = Image.open(r"C:\Users\Ryan\Documents\GitHub\WxFrame\img\ndbc_map.png")
+        img = Image.open(img_dir+"ndbc_map.png")
         cropped = img.crop((0, 50, 750, 240))
-        darker  = cropped.point(lambda p: p * 0.7)
+        darker  = cropped.point(lambda p: p * 0.7)  ## Need to do this outside of wxframe, no reason it can't be pre-done
         self.NDBC = ImageTk.PhotoImage(darker)
         self.ndbc = tk.Label(image=self.NDBC)
         self.ndbc.place(anchor='nw', relx=0.55, rely=0.214)
