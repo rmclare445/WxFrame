@@ -122,7 +122,7 @@ def plot_meteogram( data_dict ):
     axs[0].text( xpt+60, ypt, 'Sky Cover', color='skyblue', weight='bold' )
     axs[0].text( xpt+71, ypt, 'Chance of Precipitation', color='gold', weight='bold' )
     
-    plt.savefig('test_plot.png')
+    plt.savefig('meteogram.png')
 
     
 if __name__ == "__main__":
