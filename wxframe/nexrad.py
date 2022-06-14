@@ -6,12 +6,12 @@ Retrieve NEXRAD frames from UW
 
 import shutil
 import requests
-import config.locs
+from tools.system_tools import img_dir, sep
 
 name = 'NEXRAD'
 cdir  = 1                                               # Correct direction for cycling
 url  = "https://tempest.aos.wisc.edu/radar/"            # URL image host
-loc  = config.locs.image_dir + "nexrad\\"               # Local image directory
+loc  = img_dir + "nexrad" + sep                         # Local image directory
 lst  = ["us3comp%02d.gif"%i for i in range(21)[1:]]     # List of file names
 
 def get_nexrad( parent ):

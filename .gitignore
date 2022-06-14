@@ -1,8 +1,7 @@
 wxframe/__pycache__
 wxframe/tools/__pycache__
-wxframe/config
-wxframe/geckodriver*
 upd/*.xml
+upd/*.bin
 img
 example_*
 upd/test_plot.png

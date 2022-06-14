@@ -6,7 +6,7 @@ Retrieve images from the web
 
 import shutil
 import requests
-import config.locs
+from tools.system_tools import img_dir
 from PIL import Image, ImageTk, ImageGrab
 
 #####################################
@@ -45,7 +45,7 @@ hm48_meteogram_url = "https://forecast.weather.gov/meteograms/Plotter.php?lat=36
 poi_meteogram_url  = "https://forecast.weather.gov/meteograms/Plotter.php?lat=46.781&lon=-92.118&wfo=DLH&zcode=MNZ037&gset=15&gdiff=3&unit=0&tinfo=CY6&ahour=0&pcmd=11011111111110000000000000000000000000000000000000000000000&lg=en&indu=1!1!1!&dd=&bw=&hrspan=48&pqpfhr=6&psnwhr=6"
 
 # Local directory for downloaded images
-img_dir = config.locs.image_dir
+# img_dir = config.locs.image_dir
 # Each image data (source url, local dir+filename)
 pw_conus_maxtemp = ( pw_conus_maxtemp_url, img_dir+"pw_conus_maxtemp.png" )
 pw_conus_mintemp = ( pw_conus_mintemp_url, img_dir+"pw_conus_mintemp.png" )
@@ -71,8 +71,7 @@ images = ( pw_conus_maxtemp, pw_conus_mintemp, pw_conus_24hrqpf,
            pw_conus_24hsnow, ab_con_6hrprecip, ab_con_850thetae,
            ab_con_capeshear, ab_con_mslp_jets, ab_pac_mslp_anom, 
            ab_pac_6hrprecip, ab_pac_850thetae, ab_pac_700wnd_pw,
-           cdip_swell, surfline_sst, surfline_wnd, home_meteogram, 
-           hm48_meteogram, poi_meteogram  )
+           cdip_swell, surfline_sst, surfline_wnd )
 
 
 def get_img( url, filename ):

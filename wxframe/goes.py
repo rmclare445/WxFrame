@@ -6,12 +6,12 @@ Retrieve satellite imagery from GOES-17
 
 import shutil
 import requests
-import config.locs
+from tools.system_tools import img_dir, sep
 
 name = 'GOES West Coast'
 cdir = -1                               # Cycling direction
 url  = "https://whirlwind.aos.wisc.edu/~wxp/goes17/vis_color/westcoast/"
-loc  = config.locs.image_dir + "wc_goes\\"
+loc  = img_dir + "wc_goes" + sep
 lst  = ["latest_westcoast_%s.jpg"%i for i in range(73)[1:]]
 
 def get_goes( parent ):
