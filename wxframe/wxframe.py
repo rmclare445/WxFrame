@@ -24,6 +24,7 @@ import tkinter as tk
 import pages   as pg
 import goes, nexrad
 from dashboard import Dashboard
+from tools.system_tools import get_dirs_from_file
 from get_img   import get_imgs, ImageGrab
 
 
@@ -39,6 +40,9 @@ class WxFrame( tk.Tk ):
         # Clarify initialization period
         self.init = True
         self.current_page = 0
+        
+        # Get local directory information
+        #self.wrkdir, self.repo_dir = get_dirs_from_file(__file__)
         
         # Exit on Esc
         self.bind( "<Escape>",   lambda x: self.destroy()   )
@@ -136,6 +140,7 @@ class WxFrame( tk.Tk ):
         self.statuslabel.config(fg="red", bg="black", 
                               font=('calibri light', int(self.height/36.), 'italic'),
                               padx=10, pady=5)
+        self.statuslabel.update()
         
     def rm_status_dialogue( self ):
         self.status.destroy()
@@ -164,8 +169,10 @@ class WxFrame( tk.Tk ):
             self.anim_wait = min(500, self.anim_wait+30)
             
     def screenshot( self ):
+        self.status_dialogue( "Saving screenshot...")
         ImageGrab.grab().save( "screenshots/"+time.strftime("%Y%m%d%H%M%S")+".png" )
         time.sleep(1)
+        self.rm_status_dialogue()
 
 
 if __name__ == "__main__":
