@@ -1,4 +1,4 @@
-# Will need shebang here
+#!/usr/bin/env python3
 """
 
 Retrieve most recent NOAA meteogram data for Pacific Grove, plot it
@@ -27,7 +27,7 @@ def retrieve_noaa_xml( url=noaa_xml_url ):
     
     return { 'init': init,
              'time': [t.text for t in time.findall('start-valid-time')],
-             'temp': fix_data( [t.text for t in data[7].findall('value')] ), 
+             'temp': fix_data( [t.text for t in data[7].findall('value')] ),
              'dwpt': fix_data( [t.text for t in data[0].findall('value')] ),
              'hidx': fix_data( [t.text for t in data[1].findall('value')] ),
              'wspd': fix_data( [t.text for t in data[2].findall('value')] ),
