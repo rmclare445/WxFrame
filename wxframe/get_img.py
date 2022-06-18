@@ -21,6 +21,7 @@ pw_conus_maxtemp_url = ndfd_loc + "ndfd_sfctmax.conus.png"
 pw_conus_mintemp_url = ndfd_loc + "ndfd_sfctmin.conus.png"
 pw_conus_24hrqpf_url = ndfd_loc + "ndfd_24hqpf.conus.png"
 pw_conus_24hsnow_url = ndfd_loc + "ndfd_24hsnow.conus.png"
+pw_conus_24hgust_url = ndfd_loc + "ndfd_24hgust.conus.png"
 # Alicia Bentley maps (http://www.atmos.albany.edu/student/abentley/realtime.html)
 #  CONUS Bentley maps
 ab_con_loc = "http://www.atmos.albany.edu/student/abentley/realtime/images/northamer/"
@@ -51,6 +52,7 @@ pw_conus_maxtemp = ( pw_conus_maxtemp_url, img_dir+"pw_conus_maxtemp.png" )
 pw_conus_mintemp = ( pw_conus_mintemp_url, img_dir+"pw_conus_mintemp.png" )
 pw_conus_24hrqpf = ( pw_conus_24hrqpf_url, img_dir+"pw_conus_24hrqpf.png" )
 pw_conus_24hsnow = ( pw_conus_24hsnow_url, img_dir+"pw_conus_24hsnow.png" )
+pw_conus_24hgust = ( pw_conus_24hgust_url, img_dir+"pw_conus_24hgust.png" )
 ab_con_6hrprecip = ( ab_con_6hrprecip_url, img_dir+"ab_con_6hrprecip.png" )
 ab_con_850thetae = ( ab_con_850thetae_url, img_dir+"ab_con_850thetae.png" )
 ab_con_capeshear = ( ab_con_capeshear_url, img_dir+"ab_con_capeshear.png" )
@@ -68,7 +70,7 @@ poi_meteogram    = ( poi_meteogram_url,    img_dir+"poi_meteogram.png"    )
 
 # All image data
 images = ( pw_conus_maxtemp, pw_conus_mintemp, pw_conus_24hrqpf,
-           pw_conus_24hsnow, ab_con_6hrprecip, ab_con_850thetae,
+           pw_conus_24hgust, ab_con_6hrprecip, ab_con_850thetae,
            ab_con_capeshear, ab_con_mslp_jets, ab_pac_mslp_anom,
            ab_pac_6hrprecip, ab_pac_850thetae, ab_pac_700wnd_pw,
            cdip_swell, surfline_sst, surfline_wnd )
@@ -138,7 +140,6 @@ def get_bentleys( ):
 
 def get_cdip( ):
     get_img( images[13][0], images[13][1] )
-
 
 
 if __name__ == "__main__":
