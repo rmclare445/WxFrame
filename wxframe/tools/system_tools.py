@@ -20,9 +20,18 @@ def get_imgdir_from_pardir( repodir ):
     return repodir + sep + "img" + sep
 
 
+def get_upddir_from_pardir( repodir ):
+    return repodir + sep + "upd" + sep
+
+
 def get_imgdir( ):
     repo_dir = os.path.abspath(os.path.join(get_pardir_from_file(__file__), os.pardir))
     return get_imgdir_from_pardir( repo_dir )
+
+
+def get_upddir( ):
+    repo_dir = os.path.abspath(os.path.join(get_pardir_from_file(__file__), os.pardir))
+    return get_upddir_from_pardir( repo_dir )
 
 
 def get_dirs_from_file( file ):
