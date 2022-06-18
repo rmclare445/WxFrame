@@ -69,7 +69,7 @@ poi_meteogram    = ( poi_meteogram_url,    img_dir+"poi_meteogram.png"    )
 # All image data
 images = ( pw_conus_maxtemp, pw_conus_mintemp, pw_conus_24hrqpf,
            pw_conus_24hsnow, ab_con_6hrprecip, ab_con_850thetae,
-           ab_con_capeshear, ab_con_mslp_jets, ab_pac_mslp_anom, 
+           ab_con_capeshear, ab_con_mslp_jets, ab_pac_mslp_anom,
            ab_pac_6hrprecip, ab_pac_850thetae, ab_pac_700wnd_pw,
            cdip_swell, surfline_sst, surfline_wnd )
 
@@ -126,6 +126,19 @@ def get_imgs( ):
     #crop_cdip()
     for img in images[4:12]:
         crop_bentleys( img[1] )
+
+def get_pws( ):
+    for img in images[:4]:
+        get_img( img[0], img[1] )
+
+def get_bentleys( ):
+    for img in images[4:12]:
+        get_img( img[0], img[1] )
+        crop_bentleys( img[1] )
+
+def get_cdip( ):
+    get_img( images[13][0], images[13][1] )
+
 
 
 if __name__ == "__main__":
