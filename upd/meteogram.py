@@ -5,10 +5,13 @@ Retrieve most recent NOAA meteogram data for Pacific Grove, plot it
 
 """
 
-import requests, math
+import requests, math, os, platform
 import numpy as np
 import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
+
+# Dumb hack -- get rid of ASAP
+sep = "\\" if platform.system() == 'Windows' else "/"
 
 noaa_xml_url = "https://forecast.weather.gov/MapClick.php?lat=36.6175&lon=-121.921&FcstType=digitalDWML"
 
@@ -122,7 +125,10 @@ def plot_meteogram( data_dict ):
     axs[0].text( xpt+60, ypt, 'Sky Cover', color='skyblue', weight='bold' )
     axs[0].text( xpt+71, ypt, 'Chance of Precipitation', color='gold', weight='bold' )
     
-    plt.savefig('meteogram.png')
+    repo = os.path.abspath(os.path.join(__file__, os.pardir, os.pardir))
+    img_dir = repo + sep + "img" + sep
+    
+    plt.savefig(img_dir + 'meteogram.png')
 
     
 if __name__ == "__main__":
