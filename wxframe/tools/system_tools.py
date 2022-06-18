@@ -42,7 +42,7 @@ def get_dirs_from_file( file ):
 
 
 img_dir = get_imgdir( )
-
+upd_dir = get_upddir( )
 
 if __name__ == "__main__":
     print(img_dir)

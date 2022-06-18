@@ -33,7 +33,7 @@ class UserHomePage( tk.Frame ):
         # Home NOAA Meteogram
         self.longmet = tk.Frame( self.parent )
         self.longmet.place(relx=0, rely=0.88, anchor="sw")
-        img = Image.open(img_dir+"meteogram.png")
+        img = Image.open(upd_dir+"meteogram.png")
         resized = img.crop((270, 35, 2200, 485))
         self.met00 = ImageTk.PhotoImage( resized )
         self.homemet00 = tk.Label(self.longmet, image=self.met00, borderwidth=0)
