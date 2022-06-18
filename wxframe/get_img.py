@@ -138,8 +138,9 @@ def get_bentleys( ):
         get_img( img[0], img[1] )
         crop_bentleys( img[1] )
 
-def get_cdip( ):
-    get_img( images[13][0], images[13][1] )
+def get_marine( ):
+    for img in images[13:16]:
+        get_img( img[0], img[1] )
 
 
 if __name__ == "__main__":
