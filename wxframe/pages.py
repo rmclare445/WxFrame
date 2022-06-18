@@ -67,7 +67,7 @@ class UserHomePage( tk.Frame ):
         self.refresh()
         
     def refresh( self ):
-        img = Image.open(img_dir+"meteogram.png")
+        img = Image.open(upd_dir+"meteogram.png")
         resized = img.crop((270, 35, 2200, 485))
         self.met00 = ImageTk.PhotoImage( resized )
         self.homemet00.config( image=self.met00 )
@@ -256,6 +256,31 @@ class QuadPlotPage( tk.Frame ):
         self.BRI = ImageTk.PhotoImage(resized)
         self.bri = tk.Label(image=self.BRI)
         self.bri.place(anchor='nw', relx=self.centerx, rely=self.centery)
+        
+        self.refresh()
+        
+    def refresh( self ):
+        img = Image.open(self.images[0][1])
+        width, height = img.size
+        resized = img.resize((int(width*self.xscale), int(height*self.yscale)),Image.ANTIALIAS)
+        self.TLI = ImageTk.PhotoImage(resized)
+        self.tli.config(image=self.TLI)
+        img = Image.open(self.images[1][1])
+        width, height = img.size
+        resized = img.resize((int(width*self.xscale), int(height*self.yscale)),Image.ANTIALIAS)
+        self.TRI = ImageTk.PhotoImage(resized)
+        self.tri.config(image=self.TRI)
+        img = Image.open(self.images[2][1])
+        width, height = img.size
+        resized = img.resize((int(width*self.xscale), int(height*self.yscale)),Image.ANTIALIAS)
+        self.BLI = ImageTk.PhotoImage(resized)
+        self.bli.config(image=self.BLI)
+        img = Image.open(self.images[3][1])
+        width, height = img.size
+        resized = img.resize((int(width*self.xscale), int(height*self.yscale)),Image.ANTIALIAS)
+        self.BRI = ImageTk.PhotoImage(resized)
+        self.bri.config(image=self.BRI)
+        self.bri.after(60000, self.refresh)
         
     def disappear( self ):
         self.tli.destroy()
