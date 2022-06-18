@@ -8,6 +8,7 @@ import tkinter as tk
 from riseset  import get_riseset
 from nws_read import get_synopsis
 from time     import strftime
+from thermopi import get_temps
 
 
 class Dashboard( tk.Frame ):
@@ -40,12 +41,12 @@ class Dashboard( tk.Frame ):
         self.riseset.config(text = self.suntimes)
         
         # Make exterior data label (dummy data for now)
-        self.exterior = tk.Label(self, text="52\u00B0\n31\u00B0")
+        self.exterior = tk.Label(self, text="--\u00B0\n--\u00B0")
         self.exterior.pack(side=tk.LEFT, fill=tk.BOTH)
         self.exterior.config(fg="white", bg="grey2", font=self.dash_font,
                              padx=10, pady=15)
-        # Make interior data label (dummy data for now)
-        self.interior = tk.Label(self, text="68\u00B0\n51\u00B0")
+        # Make interior data label
+        self.interior = tk.Label(self, text="%s\u00B0\n%s\u00B0" % get_temps())
         self.interior.pack(side=tk.LEFT, fill=tk.BOTH, padx=1)
         self.interior.config(fg="white", bg="grey8", font=self.dash_font,
                              padx=10, pady=15)
@@ -71,6 +72,10 @@ class Dashboard( tk.Frame ):
         string = strftime("%a, %d %b %Y\n%H:%M:%S")
         self.clock.config(text = string)
         self.clock.after(1000, self.update_clock)
+
+    def update_temps( self ):
+        self.interior.config(text="%s\u00B0\n%s\u00B0" % get_temps())
+        self.interior.after(15000, self.update_temps)
         
     def update_riseset( self, parent ):
         # Only retrieve data on initializaiton or if it's midnight
