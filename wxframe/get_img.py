@@ -121,8 +121,8 @@ def get_imgs( ):
     for img in images:
         get_img( img[0], img[1] )
     # Crop images what need croppin
-    crop_meteogram( home_meteogram[1] )
-    crop_meteogram( hm48_meteogram[1] )
+    # crop_meteogram( home_meteogram[1] )
+    # crop_meteogram( hm48_meteogram[1] )
     #crop_cdip()
     for img in images[4:12]:
         crop_bentleys( img[1] )

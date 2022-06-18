@@ -15,7 +15,7 @@ loc  = img_dir + "nexrad" + sep                         # Local image directory
 lst  = ["us3comp%02d.gif"%i for i in range(21)[1:]]     # List of file names
 
 def get_nexrad( parent ):
-    parent.status_dialogue( 'UPDATING NEXRAD...' )
+    #parent.status_dialogue( 'UPDATING NEXRAD...' )
     parent.nexrad_update = True
     for img in lst:
         # Open the url
@@ -27,7 +27,7 @@ def get_nexrad( parent ):
             with open(filename,'wb') as f:
                 shutil.copyfileobj(r.raw, f)
     parent.nexrad_update = False
-    parent.rm_status_dialogue()
+    #parent.rm_status_dialogue()
 
 if __name__ == "__main__":
     get_nexrad()
