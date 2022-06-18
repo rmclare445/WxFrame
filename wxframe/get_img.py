@@ -6,7 +6,7 @@ Retrieve images from the web
 
 import shutil
 import requests
-from tools.system_tools import img_dir
+from tools.system_tools import img_dir, upd_dir
 from PIL import Image, ImageTk, ImageGrab
 
 #####################################
