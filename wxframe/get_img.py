@@ -139,7 +139,7 @@ def get_bentleys( ):
         crop_bentleys( img[1] )
 
 def get_marine( ):
-    for img in images[13:16]:
+    for img in images[12:15]:
         get_img( img[0], img[1] )
 
 
