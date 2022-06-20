@@ -79,9 +79,9 @@ class WxFrame( tk.Tk ):
         
         # Get new images
         print("Getting updated images")
-        # get_imgs()
-        # nexrad.get_nexrad(self)
-        # goes.get_goes(self)
+        get_imgs()
+        nexrad.get_nexrad() #self)
+        goes.get_goes() #self)
         print("Updated images retrieved")
         
         # Initialize pages, show homepage

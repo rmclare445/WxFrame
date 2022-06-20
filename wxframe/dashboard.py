@@ -37,7 +37,7 @@ class Dashboard( tk.Frame ):
         self.riseset.pack(side=tk.LEFT, fill=tk.BOTH, padx=1)
         self.riseset.config(fg="white", bg="red", font=self.dash_font,
                             padx=10, pady=15)
-        self.update_riseset( self.parent )
+        self.update_riseset( )
         self.riseset.config(text = self.suntimes)
         
         # Make exterior data label (dummy data for now)
@@ -50,13 +50,14 @@ class Dashboard( tk.Frame ):
         self.interior.pack(side=tk.LEFT, fill=tk.BOTH, padx=1)
         self.interior.config(fg="white", bg="grey8", font=self.dash_font,
                              padx=10, pady=15)
+        self.update_temps( )
         # Make NWS synopsis label
         self.synopsis = tk.Label(self, text=" ")
         self.synopsis.pack(side=tk.LEFT, fill=tk.BOTH)
         self.synopsis.config(fg="white", bg="grey16", 
                              font= (self.dash_font[0], int(self.dash_font[1]/2.)),
                              padx=10, pady=10, wraplength=1000)
-        self.update_synopsis( self.parent )
+        self.update_synopsis( )
         
         self.full = True
         
@@ -77,16 +78,16 @@ class Dashboard( tk.Frame ):
         self.interior.config(text="%s\u00B0\n%s\u00B0" % get_temps())
         self.interior.after(15000, self.update_temps)
         
-    def update_riseset( self, parent ):
+    def update_riseset( self ):
         # Only retrieve data on initializaiton or if it's midnight
-        if parent.init or strftime("%H") == "00":
+        if self.parent.init or strftime("%H") == "00":
             sr, ss = get_riseset()
             self.suntimes = "%s \u25b2\n%s \u25bc" % (sr, ss)
             #self.riseset.config(text = self.suntimes)
         # Update every 30 minutes
         self.riseset.after(1800000, self.update_riseset)
         
-    def update_synopsis( self, parent ):
+    def update_synopsis( self ):
         # Get synopses from NWS
         content = get_synopsis()
         multiplier = 0.55 * (1. - min(len(content)/2700., .9))
