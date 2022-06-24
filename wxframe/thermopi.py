@@ -16,15 +16,15 @@ def C_to_F( T ):
     return T * 1.8 + 32
 
 
-def read_nowlog( path=upd_dir+"log.now" ):
-    # Retrieve non-temporal data from log.now
+def read_indoor( path=upd_dir+"log.indoor" ):
+    # Retrieve non-temporal data from log.indoor
     with open( path, "r") as f:
         data = f.read().replace("\n","").replace(" ","").split(",")
     return float(data[2]), int(data[3]), True if data[4] == "T" else False
 
 
 def get_temps( metric=False ):
-    t, h, s = read_nowlog()
+    t, h, s = read_indoor()
     T = F_to_C(t)
     Td = T - ((100 - h)/5.)    # Approximation from Lawrence in BAMS, 2005
     if not metric:
