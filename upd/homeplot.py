@@ -110,8 +110,8 @@ def plot_series( data_dict=get_series() ):
     axs.grid(True, linewidth=.25)
 
     # Labels every half hour
-    axs.xaxis.set_ticks( range(len(time))[i::30] )
-    axs.set_xticklabels(time[i::30], rotation=30, fontsize=9)
+    axs.xaxis.set_ticks( range(len(time))[hr1::30] )
+    axs.set_xticklabels([' ' if t[-2:]=='30' else t for t in time[hr1::30]], rotation=30, fontsize=9)
 
     axs.set_ylim((53, 77))
     axs.yaxis.set_ticks(range(55, 76)[::5])
