@@ -2,11 +2,9 @@
 
 WxFrame pages defined
 
-## Need to add update functions to pages
-
 ## Should have a Sierra snow forecast page
-
 ## Maybe add a California fire monitoring page?
+## Perhaps these two should share a "page number" but be shown according to current season?
 
 ## Non-weather page (news / stocks?)
 
@@ -28,7 +26,7 @@ class UserHomePage( tk.Frame ):
         tk.Frame.__init__(self, parent)
         self.parent = parent
         self.name = 'Local Forecast'
-        
+
     def show( self ):
         # Home NOAA Meteogram
         self.longmet = tk.Frame( self.parent )
@@ -45,7 +43,7 @@ class UserHomePage( tk.Frame ):
         self.wrh.place(relx=0., rely=0.06, anchor='nw')
         self.wrhlabel = tk.Label( self.wrh, text=w, height=23, anchor='nw', justify=tk.LEFT )
         self.wrhlabel.pack( )
-        self.wrhlabel.config(fg="white", bg="black", 
+        self.wrhlabel.config(fg="white", bg="black",
                                   font=('arial black', int(self.parent.height/110)),
                                   padx=5, pady=4, wraplength=600)
 
@@ -58,14 +56,14 @@ class UserHomePage( tk.Frame ):
             textdiv = 90.
         self.discussion = tk.Frame( self.parent, relief=tk.RAISED, borderwidth=2 )
         self.discussion.place(relx=0.99, rely=0.06, anchor='ne')
-        self.discusslabel = tk.Label( self.discussion, text=d, height=22, anchor='nw', 
+        self.discusslabel = tk.Label( self.discussion, text=d, height=22, anchor='nw',
                                       justify=tk.LEFT )
         self.discusslabel.pack( )
-        self.discusslabel.config(fg="white", bg="black", 
+        self.discusslabel.config(fg="white", bg="black",
                                   font=('lucida', int(self.parent.height/textdiv)),#90.)),
                                   padx=10, pady=4, wraplength=1250)
         self.refresh()
-        
+
     def refresh( self ):
         img = Image.open(img_dir+"meteogram.png")
         resized = img.crop((270, 35, 2200, 485))
@@ -86,7 +84,7 @@ class MarineCAPage( tk.Frame ):
         tk.Frame.__init__(self, parent)
         self.name = 'Marine'
         self.parent = parent
-        
+
     def show( self ):
         # Surfline SST plot, resized to ~ 2/3
         img = Image.open(surfline_sst[1])
@@ -123,11 +121,11 @@ class MarineCAPage( tk.Frame ):
         self.marine.place(relx=0.26, rely=0.09, anchor='nw')
         self.marinelabel = tk.Label( self.marine, text=get_marine(), justify=tk.LEFT, height=5 )
         self.marinelabel.pack( )
-        self.marinelabel.config(fg="white", bg="midnight blue", 
+        self.marinelabel.config(fg="white", bg="midnight blue",
                                 font=('lucida', int(self.parent.height/75.)),
                                 padx=15, pady=3, wraplength=1300)
         self.refresh()
-    
+
     def refresh( self ):
         # Surfline SST plot, resized to ~ 2/3
         img = Image.open(surfline_sst[1])
@@ -153,7 +151,7 @@ class MarineCAPage( tk.Frame ):
         # Marine synopsis
         self.marinelabel.config(text=get_marine())
         self.marinelabel.after(60000, self.refresh)
-        
+
     def disappear( self ):
         self.cdip.destroy()
         self.sst.destroy()
@@ -161,8 +159,8 @@ class MarineCAPage( tk.Frame ):
         self.parent.tab.destroy()
         self.ndbc.destroy()
         self.marine.destroy()
-        
-        
+
+
 class FullAnimPage( tk.Frame ):
     ''' Displays a single image frame and refreshes images in a cycle to animate '''
     def __init__(self, parent, page ):
@@ -173,20 +171,20 @@ class FullAnimPage( tk.Frame ):
         self.lst  = page.lst
         self.cdir = page.cdir
         self.c    = 0
-    
+
     def disp( self ):
         self.frame = ImageTk.PhotoImage( Image.open(self.loc+self.lst[self.cdir*self.c]) )
         self.label = tk.Label(image=self.frame)
         self.label.place(anchor='center', relx=0.5, rely=0.44)
         self.parent.header.tkraise()
-        
+
     def show( self ):
         self.disp()
         self.cycle()
-        
+
     def disappear( self ):
         self.label.destroy()
-        
+
     def advance( self, direction ):
         # Advances forward or backward one frame depending on direction (-1, 1)
         if direction == 1 and self.c == (len(self.lst)-1):
@@ -197,7 +195,7 @@ class FullAnimPage( tk.Frame ):
             self.c = self.c + 1 * direction
         self.frame = ImageTk.PhotoImage( Image.open(self.loc+self.lst[self.cdir*self.c]) )
         self.label.config(image=self.frame)
-        
+
     def cycle( self ):
         if not self.parent.paused:
             self.advance( 1 )
@@ -225,7 +223,7 @@ class QuadPlotPage( tk.Frame ):
             self.images  = images[8:12]
             self.xscale  = 0.75
             self.yscale  = 0.68
-        
+
     def show( self ):
         self.parent.dash.trim()
         # Top Left Image
@@ -256,9 +254,9 @@ class QuadPlotPage( tk.Frame ):
         self.BRI = ImageTk.PhotoImage(resized)
         self.bri = tk.Label(image=self.BRI)
         self.bri.place(anchor='nw', relx=self.centerx, rely=self.centery)
-        
+
         self.refresh()
-        
+
     def refresh( self ):
         img = Image.open(self.images[0][1])
         width, height = img.size
@@ -281,10 +279,39 @@ class QuadPlotPage( tk.Frame ):
         self.BRI = ImageTk.PhotoImage(resized)
         self.bri.config(image=self.BRI)
         self.bri.after(60000, self.refresh)
-        
+
     def disappear( self ):
         self.tli.destroy()
         self.tri.destroy()
         self.bli.destroy()
         self.bri.destroy()
         self.parent.dash.show()
+
+
+class ThermopiPage( tk.Frame ):
+    ''' Shows home temperature and dew point readings '''
+    def __init__(self, parent):
+        tk.Frame.__init__(self, parent)
+        self.parent = parent
+        self.name   = 'Thermopi Record'
+
+    def show( self ):
+        self.thermplot = tk.Frame( self.parent )
+        self.thermplot.place(relx=0.5, rely=0.5, anchor="center")
+        img = Image.open(img_dir+"thermoplot.png")
+        cropped = img.crop((270, 35, 2200, 485))
+        self.therm = ImageTk.PhotoImage( cropped )
+        self.thermoplot = tk.Label(self.thermplot, image=self.therm, borderwidth=0)
+        self.thermoplot.pack(side=tk.LEFT, fill=tk.BOTH)
+
+        self.refresh()
+
+    def refresh( self ):
+        img = Image.open(img_dir+"thermoplot.png")
+        cropped = img.crop((270, 35, 2200, 485))
+        self.therm = ImageTk.PhotoImage( cropped )
+        self.thermoplot.config( image=self.therm )
+        self.thermoplot.after(15000, self.refresh)
+
+    def disappear( self ):
+        self.themplot.destroy()
