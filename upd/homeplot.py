@@ -69,8 +69,29 @@ def plot_series( data_dict=get_series() ):
     axs.set_title('House Temperature and Dew Point', loc='left', fontweight='bold')
 
     time = data_dict['times']
+    temp = data_dict['temps']
+    dtmp = data_dict['dtmps']
     stat = data_dict['stats']
     ttmp = data_dict['ttmps']
+
+    # Fill missing values
+    hr, min = int(time[0][:2]), int(time[0][-2:])
+    for i, t in enumerate( time ):
+        if int(t[:2]) != hr or int(t[-2:]) != min:
+            time.insert(i, "%02d:%02d" % (hr, min))
+            temp.insert(i, float('nan'))
+            dtmp.insert(i, float('nan'))
+            stat.insert(i, False)
+            ttmp.insert(i, -100)      # Because nans would mess up the list comprehension below
+        if min == 59:
+            min = 0
+            hr = 0 if hr == 23 else hr+1
+        else:
+            min+=1
+
+    stat = data_dict['stats']
+    ttmp = data_dict['ttmps']
+
     # Create discontinuities in target temp
     ttmp = [float('nan') if ttmp[i] != ttmp[i+1] else int(ttmp[i]) for i in range(len(ttmp)-1)]
 
@@ -81,11 +102,11 @@ def plot_series( data_dict=get_series() ):
             break
 
     # Plot indoor temperature
-    axs.plot( range(len(time))  , data_dict['temps'], 'r-'            )
+    axs.plot( range(len(time))  , temp, 'r-'          )
     # Plot dew point
-    axs.plot( range(len(time))  , data_dict['dtmps'], 'yellowgreen'   )
+    axs.plot( range(len(time))  , dtmp, 'yellowgreen' )
     # Plot target temperature set in thermopi namelist
-    axs.plot( range(len(time)-1), ttmp,               'c--', alpha=0.75 )
+    axs.plot( range(len(time)-1), ttmp, 'c--', alpha=0.75 )
     axs.grid(True, linewidth=.25)
 
     # Labels every half hour
