@@ -314,4 +314,4 @@ class ThermopiPage( tk.Frame ):
         self.thermoplot.after(15000, self.refresh)
 
     def disappear( self ):
-        self.themplot.destroy()
+        self.thermplot.destroy()
