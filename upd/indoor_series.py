@@ -11,7 +11,7 @@ def write_series( ):
         current = f.read()
 
     try:
-        with open("./log.series", "r") as f:
+        with open("./log.indoor", "r") as f:
             content = f.readlines()
     except:
         content = []
@@ -21,7 +21,7 @@ def write_series( ):
     lim = min( len(content), 2880 )
     content = content[-lim:]
 
-    with open("./log.series", "w") as f:
+    with open("./log.indoor", "w") as f:
         for line in content:
             f.write( line )
 

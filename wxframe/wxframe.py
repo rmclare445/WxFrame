@@ -31,7 +31,7 @@ from get_img   import get_imgs, ImageGrab
 class WxFrame( tk.Tk ):
     def __init__( self ):
         super().__init__()
-        
+
         # Configure attributes
         self.title("WxFrame")
         self.configure(bg='black', cursor="none")
@@ -40,10 +40,10 @@ class WxFrame( tk.Tk ):
         # Clarify initialization period
         self.init = True
         self.current_page = 0
-        
+
         # Get local directory information
         #self.wrkdir, self.repo_dir = get_dirs_from_file(__file__)
-        
+
         # Exit on Esc
         self.bind( "<Escape>",   lambda x: self.destroy()   )
         # Turn page on Enter (For conventional and Macally inputs)
@@ -53,7 +53,7 @@ class WxFrame( tk.Tk ):
         for i in range(10):
            self.bind( str(i),            self.toggle_page   )
            self.bind( '<KP_'+str(i)+">", self.toggle_page   )
-           
+
         # Bind animation controls and set initial conditions
         self.bind( "<asterisk>",    lambda x: self.pause()  )
         self.bind( "<KP_Multiply>", lambda x: self.pause()  )
@@ -63,27 +63,27 @@ class WxFrame( tk.Tk ):
         self.bind( "+",             lambda x: self.plus()   )
         self.bind( "<KP_Add>",      lambda x: self.plus()   )
         self.anim_wait = 100
-        
+
         # Take screenshot on "="
         self.bind( "<equal>", lambda x: self.screenshot() )
-        
+
         # There's also KP_Decimal, KP_Divide, BackSpace
-        
+
         # Get screen resources
         self.width  = self.winfo_screenwidth()
         self.height = self.winfo_screenheight()
-        
+
         # Update booleans for pausing animations during updating
         self.goes_update = False
         self.nexrad_update = False
-        
+
         # Get new images
         print("Getting updated images")
         get_imgs()
         nexrad.get_nexrad() #self)
         goes.get_goes() #self)
         print("Updated images retrieved")
-        
+
         # Initialize pages, show homepage
         self.ps  = [ pg.UserHomePage(self),
                      pg.MarineCAPage(self),
@@ -91,12 +91,13 @@ class WxFrame( tk.Tk ):
                      pg.FullAnimPage(self, goes),
                      pg.QuadPlotPage(self, "CONUS Daily"),
                      pg.QuadPlotPage(self, "CONUS Analysis"),
-                     pg.QuadPlotPage(self, "Pacific Analysis") ]
+                     pg.QuadPlotPage(self, "Pacific Analysis"),
+                     pg.ThermopiPage(self)  ]
         self.ps[0].show()
-        
+
         # Display dashboard
         self.dash = Dashboard(self)
-        
+
         # Make header with page name
         self.header = tk.Frame( self, relief=tk.RAISED, borderwidth=4 )
         self.header.place(relx=0, rely=0, anchor="nw")
@@ -106,7 +107,7 @@ class WxFrame( tk.Tk ):
                              font=(self.globfont, int(self.height/36.), 'italic'),
                              padx=10, pady=5)
         self.headtext.config(text = self.ps[0].name)
-        
+
         # Initialization period over
         self.init = False
 
@@ -121,7 +122,7 @@ class WxFrame( tk.Tk ):
         self.current_page = int(n.char)
         self.headtext.config(text = self.ps[self.current_page].name)
         self.ps[self.current_page].show()
-        
+
     def turn_page( self ):
         ''' Advance to the next page in self.ps, wrap around at the end '''
         self.ps[self.current_page].disappear()
@@ -131,17 +132,17 @@ class WxFrame( tk.Tk ):
             self.current_page = 0
         self.headtext.config(text = self.ps[self.current_page].name)
         self.ps[self.current_page].show()
-        
+
     def status_dialogue( self, string ):
         self.status = tk.Frame( self )
         self.status.place(relx=1, rely=0, anchor='ne')
         self.statuslabel = tk.Label( self.status, text=string )
         self.statuslabel.pack()
-        self.statuslabel.config(fg="red", bg="black", 
+        self.statuslabel.config(fg="red", bg="black",
                               font=('calibri light', int(self.height/36.), 'italic'),
                               padx=10, pady=5)
         self.statuslabel.update()
-        
+
     def rm_status_dialogue( self ):
         self.status.destroy()
 
@@ -167,7 +168,7 @@ class WxFrame( tk.Tk ):
         else:
             # Increase wait time between frames
             self.anim_wait = min(500, self.anim_wait+30)
-            
+
     def screenshot( self ):
         self.status_dialogue( "Saving screenshot...")
         ImageGrab.grab().save( "screenshots/"+time.strftime("%Y%m%d%H%M%S")+".png" )
