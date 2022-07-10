@@ -23,11 +23,9 @@ def get_localfiles( ):
 
 def get_filenames( interval=3 ):
     ''' Generate filenames for nesdis images, interval may be 1 for 10 min,
-         2 for 20 min, or 3 for half-hour. NOTE: If you change the interval, 
-         you should clear the img/cafire directory because it will not 
-         necessarily overwrite old images.
+         2 for 20 min, or 3 for half-hour.
     '''
-    now = datetime.now().timetuple()
+    now = datetime.utcnow().timetuple()
 
     dtg_yd = "%04d%03d" % (now.tm_year, now.tm_yday)
     dtg_mins = ["%s1" % i for i in range(6)][::interval]

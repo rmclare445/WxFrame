@@ -80,8 +80,9 @@ class WxFrame( tk.Tk ):
         # Get new images
         print("Getting updated images")
         get_imgs()
-        nexrad.get_nexrad() #self)
-        goes.get_goes() #self)
+        nexrad.get_nexrad()
+        goes.get_goes()
+        cafire.get_nesdis()
         print("Updated images retrieved")
 
         # Initialize pages, show homepage
@@ -149,12 +150,12 @@ class WxFrame( tk.Tk ):
 
     def pause( self ):
         ''' Pause animations '''
-        if type(self.ps[self.current_page]).__name__ == "FullAnimPage":
+        if type(self.ps[self.current_page]).__name__ in ("FullAnimPage", "WCosFirePage"):
             self.paused = not self.paused
 
     def plus( self ):
         ''' Animation control '''
-        if self.paused and type(self.ps[self.current_page]).__name__ == "FullAnimPage":
+        if self.paused and type(self.ps[self.current_page]).__name__ in ("FullAnimPage", "WCosFirePage"):
             # Single frame advance when paused
             self.ps[self.current_page].advance( 1 )
         else:
@@ -163,7 +164,7 @@ class WxFrame( tk.Tk ):
 
     def minus( self ):
         ''' Animation control '''
-        if self.paused and type(self.ps[self.current_page]).__name__ == "FullAnimPage":
+        if self.paused and type(self.ps[self.current_page]).__name__ in ("FullAnimPage", "WCosFirePage"):
             # Single frame retreat when paused
             self.ps[self.current_page].advance( -1 )
         else:
