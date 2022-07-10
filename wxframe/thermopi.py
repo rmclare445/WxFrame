@@ -4,7 +4,7 @@ Reads retrieved thermopi data
 
 '''
 
-
+import platform
 from tools.system_tools import upd_dir
 
 
@@ -24,6 +24,9 @@ def read_indoor( path=upd_dir+"log.indoor" ):
 
 
 def get_temps( metric=False ):
+    # Return dummy data for desktop
+    if platform.system() == "Windows":
+        return 68, 60
     t, h, s = read_indoor()
     T = F_to_C(t)
     Td = T - ((100 - h)/5.)    # Approximation from Lawrence in BAMS, 2005
