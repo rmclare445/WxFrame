@@ -7,3 +7,7 @@ Useful links for potential future pages
 NOAA Lake Superior nowcast - Super thorough, good to know for upper midwest.  Similar pages probably exist for other lakes.
 https://www.glerl.noaa.gov/res/glcfs/ncast.php?lake=sup
 https://www.glerl.noaa.gov/res/glcfs/
+
+
+GOES-West Fire - Because it's kind of hard to find and you may need to again
+https://www.star.nesdis.noaa.gov/GOES/sector_band.php?sat=G17&sector=psw&band=FireTemperature&length=240&dim=0
