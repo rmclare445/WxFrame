@@ -22,7 +22,7 @@ Weather Frame driver script
 import time, platform
 import tkinter as tk
 import pages   as pg
-import goes, nexrad
+import goes, nexrad, cafire
 from dashboard import Dashboard
 from tools.system_tools import get_dirs_from_file
 from get_img   import get_imgs, ImageGrab
@@ -92,6 +92,7 @@ class WxFrame( tk.Tk ):
                      pg.QuadPlotPage(self, "CONUS Daily"),
                      pg.QuadPlotPage(self, "CONUS Analysis"),
                      pg.QuadPlotPage(self, "Pacific Analysis"),
+                     pg.WCosFirePage(self, cafire),
                      pg.ThermopiPage(self)  ]
         self.ps[0].show()
 
