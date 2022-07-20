@@ -295,6 +295,7 @@ class WCosFirePage( tk.Frame ):
     def __init__(self, parent, page ):
         tk.Frame.__init__(self, parent)
         self.parent = parent
+        self.page = page
         self.name = page.name
         self.loc  = page.loc
         self.lst  = page.get_localfiles()
@@ -309,9 +310,11 @@ class WCosFirePage( tk.Frame ):
         self.parent.header.tkraise()
 
     def show( self ):
+        self.lst = self.page.get_localfiles()
+
         self.parent.dash.trim()
         self.disp()
-        
+
         # NWS fire outlook plot, resized to ~ 2/3
         img = Image.open(nws_fire_outlook[1])
         resized = img.resize((590, 400),Image.ANTIALIAS)
@@ -324,7 +327,7 @@ class WCosFirePage( tk.Frame ):
         self.NMO = ImageTk.PhotoImage(resized)
         self.nmo = tk.Label(image=self.NMO)
         self.nmo.place(anchor='nw', relx=0., rely=0.48)
-        
+
         self.cycle()
 
     def disappear( self ):
@@ -335,6 +338,7 @@ class WCosFirePage( tk.Frame ):
 
     def advance( self, direction ):
         # Advances forward or backward one frame depending on direction (-1, 1)
+        self.lst = self.page.get_localfiles()
         if direction == 1 and self.c == (len(self.lst)-1):
             self.c = 0
         elif direction == -1 and self.c == 0:
