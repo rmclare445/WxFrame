@@ -12,6 +12,8 @@ WxFrame pages defined
 ##  on the same plots.  The QuadPlotPages could toggle through times
 ##  by using +/-
 
+## Maybe this script should be a directory and each class should have their own script
+
 """
 
 import tkinter as tk
@@ -286,6 +288,70 @@ class QuadPlotPage( tk.Frame ):
         self.bli.destroy()
         self.bri.destroy()
         self.parent.dash.show()
+
+
+class WCosFirePage( tk.Frame ):
+    ''' Wildfire plots and animation '''
+    def __init__(self, parent, page ):
+        tk.Frame.__init__(self, parent)
+        self.parent = parent
+        self.page = page
+        self.name = page.name
+        self.loc  = page.loc
+        self.lst  = page.get_localfiles()
+        self.cdir = page.cdir
+        self.c    = 0
+
+    def disp( self ):
+        # Display animated element
+        self.frame = ImageTk.PhotoImage( Image.open(self.loc+self.lst[self.cdir*self.c]) )
+        self.label = tk.Label(image=self.frame)
+        self.label.place(anchor='center', relx=0.65, rely=0.44)
+        self.parent.header.tkraise()
+
+    def show( self ):
+        self.lst = self.page.get_localfiles()
+
+        self.parent.dash.trim()
+        self.disp()
+
+        # NWS fire outlook plot, resized to ~ 2/3
+        img = Image.open(nws_fire_outlook[1])
+        resized = img.resize((590, 400),Image.ANTIALIAS)
+        self.NFO = ImageTk.PhotoImage(resized)
+        self.nfo = tk.Label(image=self.NFO)
+        self.nfo.place(anchor='nw', relx=0., rely=0.09)
+        # NIFC monthly outlook plot, resized to ~ 1/2
+        img = Image.open(nifc_fire_month[1])
+        resized = img.resize((514, 397),Image.ANTIALIAS)
+        self.NMO = ImageTk.PhotoImage(resized)
+        self.nmo = tk.Label(image=self.NMO)
+        self.nmo.place(anchor='nw', relx=0., rely=0.48)
+
+        self.cycle()
+
+    def disappear( self ):
+        self.label.destroy()
+        self.nfo.destroy()
+        self.nmo.destroy()
+        self.parent.dash.show()
+
+    def advance( self, direction ):
+        # Advances forward or backward one frame depending on direction (-1, 1)
+        self.lst = self.page.get_localfiles()
+        if direction == 1 and self.c == (len(self.lst)-1):
+            self.c = 0
+        elif direction == -1 and self.c == 0:
+            self.c = (len(self.lst)-1)
+        else:
+            self.c = self.c + 1 * direction
+        self.frame = ImageTk.PhotoImage( Image.open(self.loc+self.lst[self.cdir*self.c]) )
+        self.label.config(image=self.frame)
+
+    def cycle( self ):
+        if not self.parent.paused:
+            self.advance( 1 )
+        self.label.after(self.parent.anim_wait, self.cycle)
 
 
 class ThermopiPage( tk.Frame ):
