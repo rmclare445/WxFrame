@@ -4,6 +4,7 @@ Record most recent thermopi retrieval to series
 
 '''
 
+from datetime import datetime
 
 def write_series( ):
 
@@ -17,7 +18,11 @@ def write_series( ):
         content = []
 
     # Record entries from each minute up to 2 days out
-    content.append(current)
+    if current not in content:
+        content.append(current)
+    else:
+        now = datetime.now()
+        content.append(now.strftime( "%Y%m%d, %H:%M:%S, nan"  ))
     lim = min( len(content), 2880 )
     content = content[-lim:]
 
