@@ -4,7 +4,8 @@ Read timeseries data and plot temperature, showing when furnace is on
 
 '''
 
-import os, platform, datetime
+import os, platform
+from datetime import datetime, timedelta
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -31,7 +32,10 @@ def read_data( line ):
     date = date + " %02d:%02d" % (hr, mn)
     time = "%02d:%02d" % (hr, mn)
     dd['time'] = time
-    dd['date'] = datetime.datetime.strptime(date, "%Y%m%d %H:%M")
+    dd['date'] = datetime.strptime(date, "%Y%m%d %H:%M")
+    if data[2] == "nan":
+        return { 'time': dd['time'], 'date': dd['date'], 'temp': float('nan'),
+                 'humd': float('nan'), 'dtmp': float('nan'), 'stat': 'F', 'ttmp': float('nan') }
     dd['temp'] = float(data[2])
     humd = int(data[3])
     dtmp = ( (dd['temp']-32)/1.8 - ((100 - (humd))/5.) ) * 1.8 + 32
@@ -49,6 +53,8 @@ def get_series( path=upd_dir+"log.indoor" ):
     dates, times, temps, humds, dtmps, stats, ttmps = [], [], [], [], [], [], []
     for line in content:
         data = read_data( line )
+        if data['date'] < datetime.now() - timedelta(days=2):
+            continue
         dates.append(data['date'])
         times.append(data['time'])
         temps.append(data['temp'])
@@ -69,6 +75,7 @@ def plot_series( data_dict=get_series() ):
     axs.set_title('House Temperature and Dew Point', loc='left', fontweight='bold')
 
     time = data_dict['times']
+    date = data_dict['dates']
     temp = data_dict['temps']
     dtmp = data_dict['dtmps']
     stat = data_dict['stats']
