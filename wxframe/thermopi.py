@@ -16,7 +16,7 @@ def C_to_F( T ):
     return T * 1.8 + 32
 
 
-def read_indoor( path=upd_dir+"log.indoor" ):
+def read_indoor( path=upd_dir+"log.thermopi" ):
     # Retrieve non-temporal data from log.indoor
     with open( path, "r") as f:
         data = f.read().replace("\n","").replace(" ","").split(",")

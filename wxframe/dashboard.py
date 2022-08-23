@@ -17,7 +17,7 @@ class Dashboard( tk.Frame ):
         self.parent = parent
         self.place(relx=0, rely=1, anchor="sw")
         self.dash_font = (parent.globfont, int(parent.height/40.), 'bold')
-        
+
         # Make clock
         self.clock = tk.Label(self, text="")
         self.clock.pack(side=tk.LEFT, fill=tk.BOTH)
@@ -25,9 +25,9 @@ class Dashboard( tk.Frame ):
                           padx=20, pady=15)
         self.update_clock( )
         self.full = False
-        
+
         self.show()
-        
+
     def show( self ):
         # Guard against duplication
         if self.full:
@@ -39,7 +39,7 @@ class Dashboard( tk.Frame ):
                             padx=10, pady=15)
         self.update_riseset( )
         self.riseset.config(text = self.suntimes)
-        
+
         # Make exterior data label (dummy data for now)
         self.exterior = tk.Label(self, text="--\u00B0\n--\u00B0")
         self.exterior.pack(side=tk.LEFT, fill=tk.BOTH)
@@ -58,9 +58,9 @@ class Dashboard( tk.Frame ):
                              font= (self.dash_font[0], int(self.dash_font[1]/2.)),
                              padx=10, pady=10, wraplength=1000)
         self.update_synopsis( )
-        
+
         self.full = True
-        
+
     def trim( self ):
         if self.full:
             self.riseset.destroy()
@@ -68,7 +68,7 @@ class Dashboard( tk.Frame ):
             self.interior.destroy()
             self.synopsis.destroy()
             self.full = False
-        
+
     def update_clock( self ):
         string = strftime("%a, %d %b %Y\n%H:%M:%S")
         self.clock.config(text = string)
@@ -77,7 +77,7 @@ class Dashboard( tk.Frame ):
     def update_temps( self ):
         self.interior.config(text="%s\u00B0\n%s\u00B0" % get_temps())
         self.interior.after(15000, self.update_temps)
-        
+
     def update_riseset( self ):
         # Only retrieve data on initializaiton or if it's midnight
         if self.parent.init or strftime("%H") == "00":
@@ -86,7 +86,7 @@ class Dashboard( tk.Frame ):
             #self.riseset.config(text = self.suntimes)
         # Update every 30 minutes
         self.riseset.after(1800000, self.update_riseset)
-        
+
     def update_synopsis( self ):
         # Get synopses from NWS
         content = get_synopsis()
