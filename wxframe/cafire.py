@@ -12,7 +12,7 @@ from tools.system_tools import img_dir, sep
 
 name = 'West Coast Fire'
 cdir = 1                            # Correct direction for cycling
-url  = "https://cdn.star.nesdis.noaa.gov/GOES17/ABI/SECTOR/psw/FireTemperature/"
+url  = "https://cdn.star.nesdis.noaa.gov/GOES18/ABI/SECTOR/wus/FireTemperature/"
 loc  = img_dir + "cafire" + sep     # Local image directory
 
 
@@ -28,7 +28,7 @@ def get_filenames( interval=3 ):
     now = datetime.utcnow().timetuple()
 
     dtg_yd = "%04d%03d" % (now.tm_year, now.tm_yday)
-    dtg_mins = ["%s1" % i for i in range(6)][::interval]
+    dtg_mins = ["%s0" % i for i in range(6)][::interval]
 
     # Create datetime group list for past 24 hours
     dtgs = []
@@ -40,18 +40,19 @@ def get_filenames( interval=3 ):
         dtgs = dtgs + [dtg_yd+("%02d"%hr)+minute for minute in dtg_mins]
 
     # Append file group suffix
-    return [dtg+"_GOES17-ABI-psw-FireTemperature-1200x1200.jpg" for dtg in dtgs]
+    return [dtg+"_GOES18-ABI-wus-FireTemperature-1000x1000.jpg" for dtg in dtgs]
 
 
 def get_nesdis( ):
 
     lst = get_filenames( )
+    print(lst)
     local_names = get_localfiles()
-    
+
     # Remove images not in new list
     for img in list( set(local_names) - set(lst) ):
         os.remove( loc + img )
-    
+
     # Get images not already in directory
     for img in list( set(lst) - set(local_names) ):
         # Open the url
@@ -60,6 +61,7 @@ def get_nesdis( ):
         if r.status_code == 200:
             r.raw.decode_content = True
             filename = loc + img
+            print(filename)
             with open(filename,'wb') as f:
                 shutil.copyfileobj(r.raw, f)
 
