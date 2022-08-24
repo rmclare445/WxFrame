@@ -16,8 +16,17 @@
 
 ## Screenshots
 
-![homepage](img/figures/homepage.png)
-![marine](img/figures/marine.png)
-![nexrad](img/figures/radar.png)
-![goes](img/figures/satellite.png)
-![conus](img/figures/conus.png)
+![homepage](wxframe/screenshots/20220823125131.png)
+Local weather discussions and Pacific Grove meteogram.
+![marine](wxframe/screenshots/20220823125119.png)
+Various model output for CA central coast, live buoy data for Monterey Bay, and NWS marine forecast discussion.
+![nexrad](wxframe/screenshots/20220823125157.png)
+Looped animation or composite NEXRAD radar for CONUS.
+![goes](wxframe/screenshots/20220823125150.png)
+Looped animation of recent GOES-18 visible imagery, zoomed to US west coast.
+![conus](wxframe/screenshots/20220823125206.png)
+Pivotal Weather 24-hour forecasts for CONUS showing max/min temperatures, total precipitation, and max wind speed.
+![cafire](wxframe/screenshots/20220823125222.png)
+Fire outlook and animation showing last 24 hours of GOES-18 imagery in fire-sensitive band.
+![thermopi](wxframe/screenshots/20220823125111.png)
+This page currently shows readings of interior temperature and dewpoint temperature taken from Raspberry Pi thermostat (thermopi).  Interior temperaure (red), interior dewpoint temperature (yellow), thermostat target temperature (blue dashed), furnace on (purple shading).
