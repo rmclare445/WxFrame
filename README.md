@@ -6,6 +6,13 @@
  The WxFrame is currently only configured to be run on a 21.5 inch monitor by a user with an interest in the Monterey Peninsula and surrounding region.  Now that the first fully automated working version has been deployed, I can look at ways to make it more easily customizable and otherwise more friendly to first time users.  
  
  Soon, I hope to showcase its use so that you can actually see what I'm talking about here.
+ 
+ ## Still to come
+ 
+ - Exterior temperature/humidity/pressure monitoring on dashboard and graph last 48 hours with thermopi display
+ - Locally-generated plots instead of choppy, resized downloads which allows greater customization better resolution (will require large data downloads!)
+ - Wintertime snow conditions to be displayed seasonally on west coast fire page
+ - Toggling between different meteograms in the homepage
 
 ## Screenshots
 
